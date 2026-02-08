@@ -7,6 +7,7 @@ import fluid, {
 } from "fluid-tailwind";
 
 export default {
+  darkMode: "class",
   content: {
     files: [
       "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -26,8 +27,11 @@ export default {
       fontFamily: {
         sans: ["var(--font-bowlby-sc)"],
         mono: ["var(--font-dm-mono)"],
+        display: ["var(--font-bowlby-sc)", "cursive"],
+        body: ["var(--font-dm-mono)", "monospace"],
       },
       colors: {
+        // Original brand colors
         "brand-blue": "#4876ff",
         "brand-lime": "#d9f154",
         "brand-navy": "#2e3192",
@@ -35,6 +39,17 @@ export default {
         "brand-pink": "#f7d0e9",
         "brand-purple": "#692e54",
         "brand-gray": "#fffdf9",
+        // Zine theme colors
+        primary: "#ff6b35",
+        secondary: "#8b5cf6",
+        "background-light": "#f7d0e9",
+        "background-dark": "#1a1a1a",
+        "zine-blue": "#0057ff",
+      },
+      boxShadow: {
+        sketch: "3px 3px 0 rgba(0,0,0,1)",
+        "sketch-lg": "6px 6px 0 rgba(0,0,0,1)",
+        "sketch-white": "3px 3px 0 rgba(255,255,255,1)",
       },
       keyframes: {
         squiggle: {

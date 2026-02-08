@@ -20,8 +20,8 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skateboard AI Configurator",
-  description: "Build your custom skateboard with AI-powered recommendations",
+  title: "Suburbia Skate - Build Your Custom Skateboard",
+  description: "Build your custom skateboard with AI-powered recommendations. Escape the cul-de-sac and shred the world.",
 };
 
 export default function RootLayout({
@@ -30,15 +30,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-background-dark">
+      <head>
+        {/* Material Icons for zine-style design */}
+        <link
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800`}
+        className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800 bg-background-dark min-h-screen`}
       >
         <AuthProvider>
-          <main>{children}</main>
+          {children}
         </AuthProvider>
         <SVGFilters />
       </body>
     </html>
   );
 }
+
