@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 
 export function Header() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { items, toggleCart } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -105,14 +107,19 @@ export function Header() {
             </button>
 
             {/* Cart */}
-            <Link href="/cart" className="relative group cursor-pointer zine-rotate">
+            <button
+              onClick={toggleCart}
+              className="relative group cursor-pointer zine-rotate focus:outline-none"
+            >
               <span className="material-icons text-3xl text-black dark:text-white group-hover:text-primary transition-colors">
                 shopping_bag
               </span>
-              <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold font-display px-2 py-1 rounded-none border-2 border-black dark:border-white shadow-sketch">
-                3
-              </span>
-            </Link>
+              {items.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold font-display px-2 py-1 rounded-none border-2 border-black dark:border-white shadow-sketch">
+                  {items.length}
+                </span>
+              )}
+            </button>
 
             {/* User Menu */}
             {isLoading ? (

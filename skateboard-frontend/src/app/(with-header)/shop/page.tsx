@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 
 // Mock product data
 const mockProducts = [
@@ -107,6 +108,7 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
 }
 
 function ProductCard({ product }: { product: typeof mockProducts[0] }) {
+  const { addToCart } = useCart();
   return (
     <div className="group relative bg-white p-2 border-2 border-background-dark shadow-sketch hover:shadow-sketch-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
       {/* Badge */}
@@ -156,7 +158,15 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
           <span className="font-mono font-black text-2xl text-background-dark tracking-tight">
             ${product.price.toFixed(2)}
           </span>
-          <button className="h-10 px-3 bg-primary text-white font-display font-bold border-2 border-black shadow-[2px_2px_0_0_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center justify-center text-sm -rotate-2 hover:rotate-0">
+          <button 
+            onClick={() => addToCart({
+              id: String(product.id),
+              name: product.name,
+              price: product.price,
+              image: product.image,
+            })}
+            className="h-10 px-3 bg-primary text-white font-display font-bold border-2 border-black shadow-[2px_2px_0_0_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center justify-center text-sm -rotate-2 hover:rotate-0"
+          >
             ADD
           </button>
         </div>

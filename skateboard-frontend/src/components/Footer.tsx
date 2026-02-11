@@ -20,7 +20,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-background-dark text-white relative border-t-8 border-primary">
+    <footer className="w-full bg-background-dark text-white relative border-t-8 border-primary overflow-hidden">
       {/* Graffiti pattern overlay */}
       <div className="absolute inset-0 bg-graffiti-pattern opacity-5 pointer-events-none" />
       
