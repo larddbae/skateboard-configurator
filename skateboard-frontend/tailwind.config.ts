@@ -53,6 +53,7 @@ export default {
         "brand-lavender": "#f3e1ef", // About Us bg
         "primary-dark": "#e85a24",   // About Us primary dark
         "paper-dark": "#2d2d2d",     // About Us dark bg
+        "paper-cream-light": "#f4f1ea", // Contact page bg
         // Zine theme colors
         primary: "#ff6b35",
         secondary: "#8b5cf6",
