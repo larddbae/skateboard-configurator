@@ -35,6 +35,7 @@ export default {
         rubik: ["var(--font-rubik)", "sans-serif"],
         roboto: ["var(--font-roboto)", "monospace"],
         courier: ["var(--font-courier)", "monospace"],
+        "space-mono": ["var(--font-space-mono)", "monospace"],
       },
       colors: {
         // Original brand colors
@@ -46,8 +47,12 @@ export default {
         // Cart Zine Colors
         "suburbia-blue": "#2e3192",
         "suburbia-purple": "#8b5cf6",
-        "suburbia-lime": "#d9f154",
+        "suburbia-lime": "#d9f154", 
+        "suburbia-pink": "#F7D0E9", // NEW
         "paper-cream": "#fdfbf7",
+        "brand-lavender": "#f3e1ef", // About Us bg
+        "primary-dark": "#e85a24",   // About Us primary dark
+        "paper-dark": "#2d2d2d",     // About Us dark bg
         // Zine theme colors
         primary: "#ff6b35",
         secondary: "#8b5cf6",
