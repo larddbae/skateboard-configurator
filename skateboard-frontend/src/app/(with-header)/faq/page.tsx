@@ -94,7 +94,7 @@ export default function FAQPage() {
 
         {/* Filter Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-16">
-            {categories.map((cat, idx) => (
+            {categories.map((cat, index) => (
                 <button 
                     key={cat}
                     onClick={() => setFilter(cat)}
@@ -104,7 +104,7 @@ export default function FAQPage() {
                     `}
                     style={{ 
                         clipPath: "polygon(3% 0%, 97% 2%, 100% 95%, 0% 100%)",
-                        transform: `rotate(${idx % 2 === 0 ? '-1deg' : '2deg'})` 
+                        transform: `rotate(${index % 2 === 0 ? '-1deg' : '2deg'})` 
                     }}
                 >
                     {cat}
@@ -114,8 +114,8 @@ export default function FAQPage() {
 
         {/* FAQ Accordion List */}
         <div className="space-y-6 max-w-3xl mx-auto">
-            {filteredFaqs.map((faq, idx) => (
-                <div key={idx} className="relative group">
+            {filteredFaqs.map((faq, index) => (
+                <div key={index} className="relative group">
                     <div className="absolute inset-0 bg-black translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" style={{ clipPath: "polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)" }}></div>
                     <div className="relative bg-paper-cream border-2 border-black p-6 group-open:bg-white" style={{ clipPath: "polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)" }}>
                         <details className="group/details">
@@ -161,7 +161,8 @@ export default function FAQPage() {
                  Actually, I'll allow googleusercontent.com in next.config or just use <img /> since user asked to match code.html. 
                  Wait, next/image requires domain config. Static img tag works but warned. I'll use <img /> to avoid config editing overhead unless necessary.
               */}
-            <img alt="skater icon" className="w-24 h-24 absolute -bottom-10 right-0 md:right-20 opacity-20 filter invert hover:opacity-40 transition-opacity animate-bounce" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtnr_Ba-rw0fct4WQUPJAr8nfqOf7VLU8TabmEmLw1AHUvVYHM7LrEqdW3LKAoG5RT8izgayC-4_YdRgmPstNnR5SU4VMWM1PPLjgFVLDZ_J-jDcuh5-aNFyT0bkYxA9Fim5TrR2oNyEIV06WncDqSw0JELJlEUeeEJnVC4V6yIAnKrjq8rlmQiEj1QVbV75YSR3jP32HL63eBT1jISmhHBvnm8oCPLrjxrJod9_G2HmSNzcrSo81nxIPA2rp0s-SHNBV4ASQ0Usc"/>
+            {/* Replaced img with div to avoid next/image config issues */}
+            <div className="w-24 h-24 absolute -bottom-10 right-0 md:right-20 opacity-20 filter invert hover:opacity-40 transition-opacity animate-bounce bg-[url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtnr_Ba-rw0fct4WQUPJAr8nfqOf7VLU8TabmEmLw1AHUvVYHM7LrEqdW3LKAoG5RT8izgayC-4_YdRgmPstNnR5SU4VMWM1PPLjgFVLDZ_J-jDcuh5-aNFyT0bkYxA9Fim5TrR2oNyEIV06WncDqSw0JELJlEUeeEJnVC4V6yIAnKrjq8rlmQiEj1QVbV75YSR3jP32HL63eBT1jISmhHBvnm8oCPLrjxrJod9_G2HmSNzcrSo81nxIPA2rp0s-SHNBV4ASQ0Usc')] bg-contain bg-no-repeat bg-center"></div>
         </div>
 
       </main>
