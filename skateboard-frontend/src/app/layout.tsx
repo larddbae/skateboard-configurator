@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bowlby_One_SC, DM_Mono, Anton, Bebas_Neue, Permanent_Marker, Rubik, Roboto_Mono, Courier_Prime, Space_Mono } from "next/font/google"; // [NEW] Added fonts
+import { Bowlby_One_SC, DM_Mono, Anton, Bebas_Neue, Permanent_Marker, Rubik, Rubik_Mono_One, Roboto_Mono, Courier_Prime, Space_Mono } from "next/font/google";
 
 import "./globals.css";
 import { SVGFilters } from "@/components/SVGFilters";
@@ -42,12 +42,18 @@ const marker = Permanent_Marker({
   weight: "400",
 });
 
-// [NEW] Added fonts configuration
 const rubik = Rubik({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-rubik",
   weight: ["400", "700", "900"],
+});
+
+const rubikMonoOne = Rubik_Mono_One({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-rubik-mono-one",
+  weight: "400",
 });
 
 const roboto = Roboto_Mono({
@@ -84,7 +90,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${bowlby.variable} ${dmMono.variable} ${anton.variable} ${bebas.variable} ${marker.variable} ${rubik.variable} ${roboto.variable} ${courier.variable} ${spaceMono.variable} antialiased font-mono font-medium text-zinc-800 bg-background-light min-h-screen`}
+        className={`${bowlby.variable} ${dmMono.variable} ${anton.variable} ${bebas.variable} ${marker.variable} ${rubik.variable} ${rubikMonoOne.variable} ${roboto.variable} ${courier.variable} ${spaceMono.variable} antialiased font-mono font-medium text-zinc-800 bg-background-light min-h-screen`}
       >
         {/* Material Icons for zine-style design */}
         <link
@@ -105,4 +111,3 @@ export default function RootLayout({
     </html>
   );
 }
-

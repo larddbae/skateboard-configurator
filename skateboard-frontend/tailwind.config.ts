@@ -25,17 +25,16 @@ export default {
     fontSize,
     extend: {
       fontFamily: {
-        sans: ["var(--font-bowlby-sc)"],
-        mono: ["var(--font-dm-mono)"],
+        sans: ["var(--font-rubik)", "sans-serif"],
+        mono: ["var(--font-roboto)", "monospace"],
         display: ["var(--font-bowlby-sc)", "cursive"],
-        body: ["var(--font-dm-mono)", "monospace"],
+        "dm-mono": ["var(--font-dm-mono)", "monospace"],
         anton: ["var(--font-anton)", "sans-serif"],
         bebas: ["var(--font-bebas)", "sans-serif"],
         marker: ["var(--font-marker)", "cursive"],
-        rubik: ["var(--font-rubik)", "sans-serif"],
-        roboto: ["var(--font-roboto)", "monospace"],
         courier: ["var(--font-courier)", "monospace"],
         "space-mono": ["var(--font-space-mono)", "monospace"],
+        "rubik-mono": ["var(--font-rubik-mono-one)", "sans-serif"],
       },
       colors: {
         // Original brand colors

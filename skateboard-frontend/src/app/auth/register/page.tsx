@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import clsx from "clsx";
-import { Logo } from "@/components/Logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,17 +19,8 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // Password strength calculation
-  const getPasswordStrength = (pwd: string) => {
-    if (pwd.length === 0) return { level: 0, text: "", color: "" };
-    if (pwd.length < 6) return { level: 1, text: "Weak", color: "bg-red-500" };
-    if (pwd.length < 8) return { level: 2, text: "Fair", color: "bg-yellow-500" };
-    if (pwd.length >= 8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) 
-      return { level: 4, text: "Strong", color: "bg-green-500" };
-    return { level: 3, text: "Good", color: "bg-brand-lime" };
-  };
-
-  const passwordStrength = getPasswordStrength(password);
+  // Toggle Password
+  const togglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,251 +51,194 @@ export default function RegisterPage() {
   const isLoading = isSubmitting || authLoading;
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-orange via-brand-purple to-zinc-900 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 right-20 text-[180px] -rotate-12">🎨</div>
-          <div className="absolute bottom-32 left-10 text-[140px] rotate-12">🛹</div>
-          <div className="absolute top-1/2 right-1/4 text-[100px] rotate-45">✨</div>
-        </div>
+    <div className="flex min-h-screen bg-paper-cream relative overflow-hidden font-space-mono text-marker-black selection:bg-tape-orange selection:text-white">
+      {/* Background Noise */}
+      <div className="fixed inset-0 pointer-events-none opacity-40 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
+      
+      {/* Big Rotated Background Text */}
+      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-5 overflow-hidden">
+         <h1 className="font-display text-[20vw] text-black leading-none -rotate-12 whitespace-nowrap select-none">CREW</h1>
+      </div>
+
+      {/* Main Content Container */}
+      <main className="w-full max-w-6xl relative z-10 flex flex-col md:flex-row items-center justify-center p-4 md:p-12 gap-8 md:gap-20 mx-auto">
         
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center w-full p-12 text-center">
-          <Logo className="h-16 text-white mb-8" />
-          <h1 className="text-4xl font-bold text-white mb-4">
-            JOIN THE<br />MOVEMENT
-          </h1>
-          <p className="text-zinc-200 text-lg max-w-md">
-            Create your account and start building custom skateboards 
-            that match your unique style.
-          </p>
-          
-          {/* Features */}
-          <div className="mt-12 space-y-4 text-left max-w-sm">
-            <div className="flex items-center gap-3 text-white">
-              <span className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">✓</span>
-              <span>AI-powered style recommendations</span>
-            </div>
-            <div className="flex items-center gap-3 text-white">
-              <span className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">✓</span>
-              <span>Save unlimited designs to your garage</span>
-            </div>
-            <div className="flex items-center gap-3 text-white">
-              <span className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full">✓</span>
-              <span>Track orders in real-time</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center bg-zinc-950 px-6 py-12 overflow-y-auto">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="mb-8 text-center lg:hidden">
-            <Logo className="h-12 text-white mx-auto" />
-          </div>
-
-          {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-3xl font-bold text-white">Create account</h2>
-            <p className="mt-2 text-zinc-400">Join the community today</p>
-          </div>
-
-          {/* Form Card */}
-          <div className="rounded-2xl bg-zinc-900/50 backdrop-blur p-8 border border-zinc-800">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Error Message */}
-              {error && (
-                <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400 border border-red-500/20 flex items-center gap-2">
-                  <span>⚠️</span> {error}
-                </div>
-              )}
-
-              {/* Name */}
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Full name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="w-full rounded-xl bg-zinc-800/50 border border-zinc-700 px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent disabled:opacity-50 transition-all"
-                  placeholder="Tony Hawk"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="w-full rounded-xl bg-zinc-800/50 border border-zinc-700 px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent disabled:opacity-50 transition-all"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    className="w-full rounded-xl bg-zinc-800/50 border border-zinc-700 px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent disabled:opacity-50 transition-all pr-12"
-                    placeholder="Min 8 characters"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </button>
-                </div>
-                {/* Password Strength */}
-                {password && (
-                  <div className="mt-2">
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4].map((level) => (
-                        <div
-                          key={level}
-                          className={clsx(
-                            "h-1 flex-1 rounded-full transition-colors",
-                            level <= passwordStrength.level ? passwordStrength.color : "bg-zinc-700"
-                          )}
+        {/* Left Side: Image Collage (Hidden on mobile) */}
+        <div className="w-full md:w-[45%] relative group hidden md:block">
+            <div className="relative transform rotate-3 transition-transform duration-500 hover:rotate-0">
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-brand-lime rounded-full mix-blend-multiply filter blur-xl opacity-60"></div>
+                <div className="absolute top-20 -right-10 w-40 h-40 bg-brand-orange rounded-full mix-blend-multiply filter blur-xl opacity-60"></div>
+                
+                <div className="relative bg-white p-4 pb-16 shadow-polaroid border border-gray-200">
+                    <div className="absolute -top-4 right-1/2 translate-x-1/2 w-32 h-8 bg-purple-200/80 shadow-tape transform -rotate-1 z-20 backdrop-blur-sm"></div>
+                    <div className="relative overflow-hidden aspect-[4/5] border-2 border-zinc-100 bg-zinc-100">
+                        <img 
+                            alt="Skate crew hanging out" 
+                            className="w-full h-full object-cover grayscale contrast-125 mix-blend-multiply opacity-90 group-hover:grayscale-0 transition-all duration-700" 
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwMoWiuM0hax6drTiKyr09UP7aGs1sr-NeFR05rH5k7gKOdbe1gZcVeQ4R1hF-rvFXk3yvZgRa6FgdYkH0dI-r-P8yYFo1KZZzacXGesv-TJNCuH0zDV_v01flF1N7XX9qUv0Mcoxjl3BNsDQhJ3_BmAkfLtHE1xxq-12vM-31dRpnaaqJXSw68-IB4rOxCuUphDf9XdvWcADIGtQpYWS4X_ZvgL2dCJbRVK-ycPZb8NGtTlUbSxJpRGGMeO75fyjYgdK8GftRs2I"
                         />
-                      ))}
+                         <div className="absolute inset-0 bg-brand-orange opacity-10 mix-blend-overlay"></div>
                     </div>
-                    <p className={clsx("text-xs mt-1", passwordStrength.color.replace("bg-", "text-"))}>
-                      {passwordStrength.text}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-zinc-300">
-                  Confirm password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={passwordConfirmation}
-                  onChange={(e) => setPasswordConfirmation(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className={clsx(
-                    "w-full rounded-xl bg-zinc-800/50 border px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent disabled:opacity-50 transition-all",
-                    passwordConfirmation && password !== passwordConfirmation
-                      ? "border-red-500"
-                      : passwordConfirmation && password === passwordConfirmation
-                      ? "border-green-500"
-                      : "border-zinc-700"
-                  )}
-                  placeholder="••••••••"
-                />
-              </div>
-
-              {/* Terms */}
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-brand-orange focus:ring-brand-orange"
-                />
-                <label htmlFor="terms" className="text-sm text-zinc-400">
-                  I agree to the{" "}
-                  <Link href="#" className="text-brand-orange hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="#" className="text-brand-orange hover:underline">
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className={clsx(
-                  "w-full rounded-xl py-4 font-bold text-lg transition-all mt-2",
-                  isLoading
-                    ? "cursor-not-allowed bg-brand-orange/50 text-white/50"
-                    : "bg-brand-orange text-white hover:bg-brand-lime hover:text-zinc-900 hover:scale-[1.02] active:scale-[0.98]"
-                )}
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span> Creating account...
-                  </span>
-                ) : (
-                  "Create Account →"
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-zinc-900/50 text-zinc-500">or sign up with</span>
-              </div>
+                    <div className="absolute bottom-4 left-0 right-0 text-center">
+                        <p className="font-marker text-2xl text-black rotate-1">
+                            Join The Crew
+                        </p>
+                    </div>
+                </div>
             </div>
-
-            {/* Social Login */}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 rounded-xl bg-zinc-800 py-3 text-white hover:bg-zinc-700 transition-colors border border-zinc-700">
-                <span>🌐</span> Google
-              </button>
-              <button className="flex items-center justify-center gap-2 rounded-xl bg-zinc-800 py-3 text-white hover:bg-zinc-700 transition-colors border border-zinc-700">
-                <span>🍎</span> Apple
-              </button>
-            </div>
-
-            {/* Login Link */}
-            <p className="mt-6 text-center text-sm text-zinc-400">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="text-brand-orange font-semibold hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </div>
-
-          {/* Back to Home */}
-          <p className="mt-8 text-center">
-            <Link href="/" className="text-sm text-zinc-500 hover:text-brand-orange transition-colors flex items-center justify-center gap-1">
-              ← Back to home
-            </Link>
-          </p>
         </div>
-      </div>
+
+        {/* Right Side: Register Form */}
+        <div className="w-full md:w-[45%] relative">
+            <div className="bg-white p-8 md:p-10 shadow-brutal border-4 border-black -rotate-1 relative">
+                {/* Tape Strips */}
+                <div className="absolute -top-3 right-10 w-24 h-8 bg-yellow-100/80 shadow-tape rotate-2 z-20"></div>
+
+                <div className="mb-6 relative z-10">
+                    <h2 className="font-rubik-mono text-3xl md:text-4xl text-black mb-2 uppercase tracking-tighter">
+                        NEW <span className="text-secondary bg-brand-lime px-2 transform -skew-x-6 inline-block">BLOOD</span>
+                    </h2>
+                    <p className="font-marker text-gray-500 text-lg -rotate-1 ml-1">start your legacy.</p>
+                </div>
+                
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-4 bg-red-100 border-2 border-red-500 text-red-600 p-3 font-bold text-sm transform rotate-1">
+                        ⚠️ {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-black pl-1 mb-1" htmlFor="name">Full Name</label>
+                        <input 
+                            className="w-full bg-transparent border-2 border-black text-black placeholder-gray-400 px-4 py-3 focus:ring-0 focus:border-brand-orange focus:bg-orange-50 transition-all font-mono text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none" 
+                            id="name" 
+                            placeholder="Tony Hawk" 
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-black pl-1 mb-1" htmlFor="email">Email</label>
+                        <input 
+                            className="w-full bg-transparent border-2 border-black text-black placeholder-gray-400 px-4 py-3 focus:ring-0 focus:border-brand-orange focus:bg-orange-50 transition-all font-mono text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none" 
+                            id="email" 
+                            placeholder="sk8er@example.com" 
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                             <label className="block text-xs font-bold uppercase tracking-widest text-black pl-1 mb-1" htmlFor="password">Password</label>
+                             <div className="relative">
+                                <input 
+                                    className="w-full bg-transparent border-2 border-black text-black placeholder-gray-400 px-4 py-3 focus:ring-0 focus:border-brand-orange focus:bg-orange-50 transition-all font-mono text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none pr-8" 
+                                    id="password" 
+                                    placeholder="Min 8 chars" 
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={isLoading}
+                                />
+                             </div>
+                        </div>
+                         <div>
+                             <label className="block text-xs font-bold uppercase tracking-widest text-black pl-1 mb-1" htmlFor="confirmPassword">Confirm</label>
+                             <div className="relative">
+                                <input 
+                                    className={clsx(
+                                        "w-full bg-transparent border-2 border-black text-black placeholder-gray-400 px-4 py-3 focus:ring-0 focus:border-brand-orange focus:bg-orange-50 transition-all font-mono text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none",
+                                        passwordConfirmation && password !== passwordConfirmation ? "border-red-500 bg-red-50" : ""
+                                    )}
+                                    id="confirmPassword" 
+                                    placeholder="Repeat it" 
+                                    type="password"
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    required
+                                    disabled={isLoading}
+                                />
+                             </div>
+                        </div>
+                    </div>
+                    {/* Show Password Toggle */}
+                    <div className="flex justify-end -mt-2">
+                        <button 
+                            type="button"
+                            onClick={togglePassword}
+                            className="text-xs font-bold text-zinc-500 hover:text-black uppercase tracking-widest"
+                        >
+                            {showPassword ? "Hide Password" : "Show Password"}
+                        </button>
+                    </div>
+
+                    {/* Terms */}
+                    <div className="flex items-start gap-3 pl-1">
+                        <input 
+                            className="mt-1 h-4 w-4 cursor-pointer appearance-none border-2 border-black bg-white checked:bg-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" 
+                            id="terms" 
+                            type="checkbox"
+                            checked={agreedToTerms}
+                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        />
+                         <label className="text-xs font-bold text-zinc-600 font-mono select-none cursor-pointer leading-tight" htmlFor="terms">
+                            I agree to the <Link href="#" className="text-brand-orange hover:text-black underline">Terms</Link> and <Link href="#" className="text-brand-orange hover:text-black underline">Privacy Policy</Link>. No poseurs allowed.
+                        </label>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className="w-full bg-black hover:bg-zinc-800 text-white font-rubik-mono text-xl py-4 border-2 border-transparent hover:border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all mt-4 uppercase tracking-wider relative overflow-hidden group"
+                    >
+                        <span className="relative z-10 flex items-center justify-center gap-3">
+                            {isLoading ? "CREATING..." : "JOIN NOW"} <span className="material-icons text-brand-lime">east</span>
+                        </span>
+                        <div className="absolute inset-0 bg-brand-lime opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    </button>
+                </form>
+
+                <div className="relative my-6 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t-2 border-dashed border-gray-300"></div>
+                    </div>
+                    <div className="relative bg-white px-4">
+                        <span className="font-marker text-zinc-400 text-sm">socials</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                     {['Google', 'Apple'].map((provider) => (
+                        <button key={provider} className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2">
+                             <span>{provider}</span>
+                        </button>
+                     ))}
+                </div>
+
+                <p className="mt-8 text-center text-sm font-mono text-zinc-600">
+                    Already skating? 
+                    <Link className="font-bold text-black underline decoration-2 decoration-brand-lime underline-offset-2 hover:bg-brand-lime hover:text-black transition-colors px-1 ml-1" href="/auth/login">Login here</Link>
+                </p>
+            </div>
+             {/* Background Decoration */}
+             <div className="absolute -bottom-12 -right-12 w-32 h-32 pointer-events-none z-0 rotate-12">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,79.6,-46.3C87.4,-33.5,90.1,-18,88.4,-3.3C86.7,11.4,80.7,25.3,71.2,37.1C61.7,48.9,48.7,58.6,35.3,65.3C21.9,72,8.1,75.7,-4.8,74.1C-17.7,72.5,-29.7,65.6,-40.7,57.1C-51.7,48.6,-61.7,38.5,-68.9,26.7C-76.1,14.9,-80.5,1.4,-78.6,-11.4C-76.7,-24.2,-68.5,-36.3,-57.9,-46C-47.3,-55.7,-34.3,-62.9,-20.9,-69.3C-7.5,-75.7,6.3,-81.3,20.5,-81.4C34.7,-81.5,49.3,-76.1,44.7,-76.4Z" fill="#a855f7" opacity="0.6" transform="translate(100 100)"></path>
+                </svg>
+            </div>
+        </div>
+      </main>
     </div>
   );
 }
