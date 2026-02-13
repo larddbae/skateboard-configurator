@@ -25,9 +25,10 @@ export default {
     fontSize,
     extend: {
       fontFamily: {
-        sans: ["var(--font-rubik)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
         mono: ["var(--font-roboto)", "monospace"],
         display: ["var(--font-bowlby-sc)", "cursive"],
+        hand: ["var(--font-gloria)", "cursive"],
         "dm-mono": ["var(--font-dm-mono)", "monospace"],
         anton: ["var(--font-anton)", "sans-serif"],
         bebas: ["var(--font-bebas)", "sans-serif"],
@@ -35,6 +36,11 @@ export default {
         courier: ["var(--font-courier)", "monospace"],
         "space-mono": ["var(--font-space-mono)", "monospace"],
         "rubik-mono": ["var(--font-rubik-mono-one)", "sans-serif"],
+        "space-grotesk": ["var(--font-space-grotesk)", "sans-serif"],
+      },
+      backgroundImage: {
+         'grain': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.15%22/%3E%3C/svg%3E')",
+         'noise': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.15%22/%3E%3C/svg%3E')",
       },
       colors: {
         // Original brand colors
@@ -46,7 +52,7 @@ export default {
         // Cart Zine Colors
         "suburbia-blue": "#2e3192",
         "suburbia-purple": "#8b5cf6",
-        "suburbia-lime": "#d9f154", 
+        "suburbia-lime": "#d9f154",
         "suburbia-pink": "#F7D0E9", // NEW
         "paper-cream": "#fdfbf7",
         "brand-lavender": "#f3e1ef", // About Us bg
@@ -54,8 +60,18 @@ export default {
         "paper-dark": "#2d2d2d",     // About Us dark bg
         "paper-cream-light": "#f4f1ea", // Contact page bg
         // Zine theme colors
-        primary: "#ff6b35",
-        secondary: "#8b5cf6",
+        primary: "#ff6b35", // Zine Orange
+        secondary: "#a3e635", // Lime Green
+        "zine-lavender": "#e9d5e6", // Light Lavender Base
+        ink: "#1a1a1a",
+        paper: "#fdfbf7",
+        
+        // Team Page Colors
+        "team-dark": "#1e1b4b",
+        "team-purple": "#a855f7",
+        "team-yellow": "#facc15",
+        "tape-orange": "#ff7e47",
+
         "background-light": "#f7d0e9",
         "background-dark": "#1a1a1a",
         "zine-blue": "#0057ff",

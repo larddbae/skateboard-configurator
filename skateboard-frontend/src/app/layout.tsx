@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bowlby_One_SC, DM_Mono, Anton, Bebas_Neue, Permanent_Marker, Rubik, Rubik_Mono_One, Roboto_Mono, Courier_Prime, Space_Mono } from "next/font/google";
+import { Bowlby_One_SC, DM_Mono, Anton, Bebas_Neue, Permanent_Marker, Rubik, Rubik_Mono_One, Roboto_Mono, Courier_Prime, Space_Mono, Gloria_Hallelujah, Inter, Space_Grotesk } from "next/font/google";
 
 import "./globals.css";
 import { SVGFilters } from "@/components/SVGFilters";
@@ -77,6 +77,27 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
+const gloria = Gloria_Hallelujah({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-gloria",
+  weight: "400",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Suburbia Skate - Build Your Custom Skateboard",
   description: "Build your custom skateboard with AI-powered recommendations. Escape the cul-de-sac and shred the world.",
@@ -90,7 +111,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${bowlby.variable} ${dmMono.variable} ${anton.variable} ${bebas.variable} ${marker.variable} ${rubik.variable} ${rubikMonoOne.variable} ${roboto.variable} ${courier.variable} ${spaceMono.variable} antialiased font-mono font-medium text-zinc-800 bg-background-light min-h-screen`}
+        className={`${bowlby.variable} ${dmMono.variable} ${anton.variable} ${bebas.variable} ${marker.variable} ${rubik.variable} ${rubikMonoOne.variable} ${roboto.variable} ${courier.variable} ${spaceMono.variable} ${gloria.variable} ${inter.variable} ${spaceGrotesk.variable} antialiased font-mono font-medium text-zinc-800 bg-background-light min-h-screen`}
       >
         {/* Material Icons for zine-style design */}
         <link

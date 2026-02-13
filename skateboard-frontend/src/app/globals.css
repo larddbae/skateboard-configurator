@@ -10,7 +10,12 @@
   background-position: center;
 }
 
+
 /* Zine Style Textures */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.15%22/%3E%3C/svg%3E");
+}
+
 .bg-paper-texture {
   background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
 }
@@ -24,6 +29,21 @@
 }
 
 /* Torn Paper Effects */
+.torn-edge {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 98%, 98% 100%, 96% 98%, 94% 100%, 92% 98%, 90% 100%, 88% 98%, 86% 100%, 84% 98%, 82% 100%, 80% 98%, 78% 100%, 76% 98%, 74% 100%, 72% 98%, 70% 100%, 68% 98%, 66% 100%, 64% 98%, 62% 100%, 60% 98%, 58% 100%, 56% 98%, 54% 100%, 52% 98%, 50% 100%, 48% 98%, 46% 100%, 44% 98%, 42% 100%, 40% 98%, 38% 100%, 36% 98%, 34% 100%, 32% 98%, 30% 100%, 28% 98%, 26% 100%, 24% 98%, 22% 100%, 20% 98%, 18% 100%, 16% 98%, 14% 100%, 12% 98%, 10% 100%, 8% 98%, 6% 100%, 4% 98%, 2% 100%, 0% 98%);
+}
+
+.hand-drawn-border {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    border: 3px solid #1a1a1a;
+}
+
+.pencil-line {
+    border-bottom: 2px solid #1a1a1a;
+    border-radius: 2px;
+    transform: rotate(-0.5deg);
+}
+
 .torn-paper {
   clip-path: polygon(
     0% 0%,
@@ -157,6 +177,83 @@
       0 0
     );
   }
+}
+
+/* Team Page Custom Utilities */
+.text-stroke {
+    -webkit-text-stroke: 2px black;
+    color: white;
+    paint-order: stroke fill;
+}
+
+.text-stroke-sm {
+    -webkit-text-stroke: 1px black;
+}
+
+.tape-strip {
+    position: relative;
+    background-color: var(--tape-orange, #ff7e47);
+    transform: rotate(-2deg);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 1);
+}
+
+.tape-strip::before, .tape-strip::after {
+    content: "";
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    height: 100%;
+    top: 0;
+    background: inherit;
+    z-index: -1;
+    clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+}
+
+.jagged-box {
+    background-color: #ff6b35;
+    position: relative;
+    clip-path: polygon(0% 5%, 5% 0%, 10% 5%, 15% 0%, 20% 5%, 25% 0%, 30% 5%, 35% 0%, 40% 5%, 45% 0%, 50% 5%, 55% 0%, 60% 5%, 65% 0%, 70% 5%, 75% 0%, 80% 5%, 85% 0%, 90% 5%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 90% 95%, 85% 100%, 80% 95%, 75% 100%, 70% 95%, 65% 100%, 60% 95%, 55% 100%, 50% 95%, 45% 100%, 40% 95%, 35% 100%, 30% 95%, 25% 100%, 20% 95%, 15% 100%, 10% 95%, 5% 100%, 0% 95%);
+}
+
+.scribble-underline {
+    position: relative;
+}
+
+.scribble-underline::after {
+    content: "";
+    position: absolute;
+    left: -10%;
+    bottom: -10px;
+    width: 120%;
+    height: 15px;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDU1_oPzq_zqXpbMOMq6b5671ALmSglDLxDTK3O5NKC-nWyqH6jiZVxqkSF59Az9j7uzZdsJwuW5TM3PiON7K0qZaDyPOdLwG8fr3P4NZtvmsSbfaTof2h8I4GBaqkSRBewL3tRsAIrmzRNYH9w0XkMTEI9PVQ1mzPQNI23pKeABi0YX0ikAyss9u0gOiRw9P6haIwebJb_PTlLIByEEAXVWGjhoWtBqYeE1JYbI79AsABR8vH8Ii8AnLxa6aOmyxvfYbbPayBPny4);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    pointer-events: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.photo-border {
+    border: 4px solid white;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+    transform: rotate(var(--rotation, 0deg));
+}
+
+.sticker-effect {
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    transition: filter 0.3s ease;
+}
+
+.group:hover .sticker-effect {
+    filter: drop-shadow(2px 2px 0 white) drop-shadow(-2px -2px 0 white) drop-shadow(2px -2px 0 white) drop-shadow(-2px 2px 0 white);
 }
 
 /* Stack Layout */
