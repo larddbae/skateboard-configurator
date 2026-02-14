@@ -17,7 +17,7 @@ const DEFAULT_WHEEL_TEXTURE = "/skateboard/SkateWheel1.png";
 const DEFAULT_DECK_TEXTURE = "/skateboard/Deck.webp";
 const DEFAULT_TRUCK_COLOR = "#6F6E6A";
 const DEFAULT_BOLT_COLOR = "#6F6E6A";
-const ENVIRONMENT_COLOR = "#3B3A3A";
+const ENVIRONMENT_COLOR = "#2a3a5c";
 
 type Props = {
   wheelTextureURLs: string[];

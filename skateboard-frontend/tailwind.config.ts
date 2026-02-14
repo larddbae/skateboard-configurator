@@ -72,6 +72,12 @@ export default {
         "team-yellow": "#facc15",
         "tape-orange": "#ff7e47",
 
+        // Build page colors
+        accent: "#ff6b00",
+        "zine-bg": "#3b82f6",
+        tape: "#ff9f1c",
+        "build-paper": "#f3f3f3",
+
         "background-light": "#f7d0e9",
         "background-dark": "#1a1a1a",
         "zine-blue": "#0057ff",
@@ -80,6 +86,8 @@ export default {
         sketch: "3px 3px 0 rgba(0,0,0,1)",
         "sketch-lg": "6px 6px 0 rgba(0,0,0,1)",
         "sketch-white": "3px 3px 0 rgba(255,255,255,1)",
+        hard: "4px 4px 0px 0px rgba(0,0,0,1)",
+        "hard-sm": "2px 2px 0px 0px rgba(0,0,0,1)",
       },
       keyframes: {
         squiggle: {
