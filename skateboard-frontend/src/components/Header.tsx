@@ -43,7 +43,7 @@ export function Header() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/shop", label: "Shop" },
-    { href: "/build", label: "Build", highlight: true },
+    { href: "/build", label: "Build" },
     { href: "/team", label: "Team" },
     { href: "/about", label: "About" },
   ];
@@ -54,7 +54,7 @@ export function Header() {
   };
 
   return (
-    <nav className="relative z-50 w-full bg-background-light dark:bg-zinc-900 border-b-4 border-black dark:border-white transition-colors duration-300">
+    <nav className="relative z-50 w-full bg-background-dark border-b-4 border-primary transition-colors duration-300">
       {/* Paper texture overlay */}
       <div className="absolute inset-0 opacity-20 bg-paper-texture pointer-events-none" />
       
@@ -64,10 +64,10 @@ export function Header() {
           <Link href="/" className="flex-shrink-0 flex items-center group cursor-pointer">
             <div className="relative transform group-hover:rotate-3 transition-transform duration-300">
               <div className="relative">
-                <span className="material-icons text-zine-blue dark:text-blue-400 text-5xl absolute -top-6 -left-4 transform -rotate-12 z-10 drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
+                <span className="material-icons text-zine-blue text-5xl absolute -top-6 -left-4 transform -rotate-12 z-10 drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
                   skateboarding
                 </span>
-                <div className="font-display text-3xl md:text-4xl leading-none text-black dark:text-white drop-shadow-[3px_3px_0_rgba(255,107,53,1)]">
+                <div className="font-display text-3xl md:text-4xl leading-none text-white drop-shadow-[3px_3px_0_rgba(255,107,53,1)]">
                   SUBURBIA<br />
                   <span className="text-2xl md:text-3xl ml-8">SKATE</span>
                 </div>
@@ -77,32 +77,33 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8 items-center">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`font-display text-xl uppercase tracking-wider transition-all transform hover:-translate-y-1 relative group ${
-                  link.highlight 
-                    ? "text-primary hover:scale-110" 
-                    : isActiveLink(link.href)
-                      ? "text-primary"
-                      : "hover:text-primary dark:hover:text-primary"
-                }`}
-              >
-                {link.label}
-                {link.highlight ? (
-                  <span className="absolute -z-10 -bottom-1 -right-1 w-full h-full bg-black dark:bg-white skew-x-6 group-hover:skew-x-0 transition-transform" />
-                ) : (
-                  <span className="absolute -bottom-2 left-0 w-full h-1 bg-black dark:bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left skew-x-12" />
-                )}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = isActiveLink(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`font-display text-xl uppercase tracking-wider transition-all transform hover:-translate-y-1 relative group ${
+                    isActive
+                      ? "text-primary hover:scale-110"
+                      : "text-white hover:text-primary"
+                  }`}
+                >
+                  {link.label}
+                  {isActive ? (
+                    <span className="absolute -z-10 -bottom-1 -right-1 w-full h-full bg-white skew-x-6 group-hover:skew-x-0 transition-transform" />
+                  ) : (
+                    <span className="absolute -bottom-2 left-0 w-full h-1 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left skew-x-12" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right side - Search, Cart, User */}
           <div className="flex items-center space-x-6">
             {/* Search Button */}
-            <button className="text-black dark:text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10">
+            <button className="text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-white/10">
               <span className="material-icons text-3xl">search</span>
             </button>
 
@@ -111,11 +112,11 @@ export function Header() {
               onClick={toggleCart}
               className="relative group cursor-pointer zine-rotate focus:outline-none"
             >
-              <span className="material-icons text-3xl text-black dark:text-white group-hover:text-primary transition-colors">
+              <span className="material-icons text-3xl text-white group-hover:text-primary transition-colors">
                 shopping_bag
               </span>
               {items.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold font-display px-2 py-1 rounded-none border-2 border-black dark:border-white shadow-sketch">
+                <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-bold font-display px-2 py-1 rounded-none border-2 border-white shadow-sketch">
                   {items.length}
                 </span>
               )}
@@ -130,7 +131,7 @@ export function Header() {
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-                  <div className="w-10 h-10 bg-primary border-2 border-black dark:border-white rounded-full overflow-hidden shadow-sketch dark:shadow-sketch-white flex items-center justify-center">
+                  <div className="w-10 h-10 bg-primary border-2 border-white rounded-full overflow-hidden shadow-sketch-white flex items-center justify-center">
                     <span className="text-white font-bold text-sm">
                       {getInitials(user.name)}
                     </span>
@@ -138,7 +139,7 @@ export function Header() {
                   <span className="hidden lg:block font-display text-sm bg-secondary text-white px-3 py-1 border-2 border-black -ml-4 z-10 transform rotate-3">
                     {user.name.split(" ")[0].toUpperCase()}
                   </span>
-                  <span className="material-icons text-black dark:text-white">expand_more</span>
+                  <span className="material-icons text-white">expand_more</span>
                 </button>
 
                 {/* Dropdown Menu */}
@@ -202,7 +203,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-black dark:text-white"
+              className="md:hidden p-2 text-white"
             >
               <span className="material-icons text-3xl">
                 {isMobileMenuOpen ? "close" : "menu"}
@@ -213,24 +214,25 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t-2 border-black dark:border-white py-4">
+          <div className="md:hidden border-t-2 border-zinc-700 py-4">
             <div className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`font-display text-xl uppercase tracking-wider px-4 py-2 ${
-                    link.highlight 
-                      ? "text-primary" 
-                      : isActiveLink(link.href)
-                        ? "text-primary bg-black/5"
-                        : "hover:text-primary hover:bg-black/5"
-                  } transition-colors`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = isActiveLink(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`font-display text-xl uppercase tracking-wider px-4 py-2 ${
+                      isActive
+                        ? "text-primary bg-white/10"
+                        : "text-white hover:text-primary hover:bg-white/5"
+                    } transition-colors`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

@@ -9,7 +9,7 @@ export function Footer() {
     { href: "/shop/wheels", label: "Wheels" },
     { href: "/shop/apparel", label: "Apparel" },
     { href: "/shop/accessories", label: "Accessories" },
-    { href: "/build", label: "Build Custom", highlight: true },
+    { href: "/build", label: "Build Custom" },
   ];
 
   const supportLinks = [
@@ -82,11 +82,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`hover:translate-x-2 transition-transform block ${
-                      link.highlight 
-                        ? "text-secondary font-bold hover:text-white mt-4" 
-                        : "hover:text-primary"
-                    }`}
+                    className="hover:translate-x-2 transition-transform block hover:text-primary"
                   >
                     {link.label}
                   </Link>
