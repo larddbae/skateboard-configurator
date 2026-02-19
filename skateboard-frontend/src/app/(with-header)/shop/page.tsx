@@ -1,88 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 
-// Mock product data
+// ─── Mock Product Data (25 products) ────────────────────────────────────────
+// To add your own images:
+//   1. Place images in /public/images/products/ (e.g. oni-mask-pro.jpg)
+//   2. Set the `image` field to "/images/products/oni-mask-pro.jpg"
+//   3. The Image component will load it from the public folder
+
 const mockProducts = [
-  {
-    id: 1,
-    name: "Oni Mask Pro",
-    category: "Pro Model",
-    price: 59.99,
-    rating: 4.5,
-    reviews: 42,
-    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=400&h=500&fit=crop",
-    badge: "New!",
-    badgeColor: "bg-primary",
-  },
-  {
-    id: 2,
-    name: "Pink Glitch",
-    category: "Art Series",
-    price: 89.99,
-    rating: 5,
-    reviews: 18,
-    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?w=400&h=500&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Thank You",
-    category: "Team Deck",
-    price: 69.99,
-    rating: 4,
-    reviews: 5,
-    image: "https://images.unsplash.com/photo-1564429238535-b5e3a8527c87?w=400&h=500&fit=crop",
-    badge: "HOT",
-    badgeColor: "bg-yellow-400",
-    badgeRounded: true,
-  },
-  {
-    id: 4,
-    name: "Suburbia Yell",
-    category: "Signature",
-    price: 79.99,
-    rating: 5,
-    reviews: 128,
-    image: "https://images.unsplash.com/photo-1531565637446-32307b194362?w=400&h=500&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Azure Deep",
-    category: "Cruiser",
-    price: 64.99,
-    rating: 3.5,
-    reviews: 12,
-    image: "https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=400&h=500&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Raw Maple",
-    category: "Blank",
-    price: 54.99,
-    rating: 4,
-    reviews: 56,
-    image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=400&h=500&fit=crop",
-  },
+  { id: 1,  name: "Oni Mask Pro",      category: "Pro Models",  brand: "Suburbia",        price: 59.99,  size: "8.0",   rating: 4.5, reviews: 42,  image: "", badge: "New!",  badgeColor: "bg-primary" },
+  { id: 2,  name: "Pink Glitch",       category: "Pro Models",  brand: "Alien Workshop",  price: 89.99,  size: "8.125", rating: 5,   reviews: 18,  image: "" },
+  { id: 3,  name: "Thank You",         category: "Team Decks",  brand: "Baker",           price: 69.99,  size: "8.0",   rating: 4,   reviews: 5,   image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
+  { id: 4,  name: "Suburbia Yell",     category: "Pro Models",  brand: "Suburbia",        price: 79.99,  size: "8.25",  rating: 5,   reviews: 128, image: "" },
+  { id: 5,  name: "Azure Deep",        category: "Cruisers",    brand: "Santa Cruz",      price: 64.99,  size: "8.5",   rating: 3.5, reviews: 12,  image: "" },
+  { id: 6,  name: "Raw Maple",         category: "Team Decks",  brand: "Baker",           price: 54.99,  size: "8.0",   rating: 4,   reviews: 56,  image: "" },
+  { id: 7,  name: "Ghost Rider",       category: "Pro Models",  brand: "Suburbia",        price: 74.99,  size: "8.0",   rating: 4.5, reviews: 33,  image: "" },
+  { id: 8,  name: "Neon Nights",       category: "Pro Models",  brand: "Alien Workshop",  price: 84.99,  size: "8.125", rating: 4,   reviews: 22,  image: "" },
+  { id: 9,  name: "Skull Crusher",     category: "Team Decks",  brand: "Baker",           price: 67.99,  size: "8.25",  rating: 4.5, reviews: 45,  image: "" },
+  { id: 10, name: "Wave Runner",       category: "Cruisers",    brand: "Santa Cruz",      price: 72.99,  size: "8.5",   rating: 4,   reviews: 38,  image: "" },
+  { id: 11, name: "Classic Pool",      category: "Old School",  brand: "Santa Cruz",      price: 62.99,  size: "8.5",   rating: 3.5, reviews: 15,  image: "" },
+  { id: 12, name: "Street Demon",      category: "Pro Models",  brand: "Suburbia",        price: 77.99,  size: "8.0",   rating: 5,   reviews: 67,  image: "" },
+  { id: 13, name: "Flame Thrower",     category: "Pro Models",  brand: "Baker",           price: 82.99,  size: "8.125", rating: 4.5, reviews: 29,  image: "", badge: "New!",  badgeColor: "bg-primary" },
+  { id: 14, name: "Acid Drop",         category: "Team Decks",  brand: "Alien Workshop",  price: 71.99,  size: "7.75",  rating: 4,   reviews: 41,  image: "" },
+  { id: 15, name: "Retro Reissue",     category: "Old School",  brand: "Santa Cruz",      price: 69.99,  size: "8.5",   rating: 4.5, reviews: 88,  image: "" },
+  { id: 16, name: "Midnight Cruiser",  category: "Cruisers",    brand: "Suburbia",        price: 66.99,  size: "8.25",  rating: 4,   reviews: 19,  image: "" },
+  { id: 17, name: "Tech Slide",        category: "Pro Models",  brand: "Alien Workshop",  price: 91.99,  size: "7.75",  rating: 5,   reviews: 52,  image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
+  { id: 18, name: "Dragon Scale",      category: "Team Decks",  brand: "Baker",           price: 73.99,  size: "8.0",   rating: 4.5, reviews: 36,  image: "" },
+  { id: 19, name: "Zen Garden",        category: "Pro Models",  brand: "Suburbia",        price: 85.99,  size: "8.125", rating: 4,   reviews: 11,  image: "" },
+  { id: 20, name: "Bone Collector",    category: "Old School",  brand: "Santa Cruz",      price: 58.99,  size: "8.38",  rating: 3.5, reviews: 27,  image: "" },
+  { id: 21, name: "Cyber Punk",        category: "Pro Models",  brand: "Alien Workshop",  price: 94.99,  size: "8.0",   rating: 5,   reviews: 73,  image: "" },
+  { id: 22, name: "Beach Bomb",        category: "Cruisers",    brand: "Santa Cruz",      price: 61.99,  size: "8.5",   rating: 4,   reviews: 44,  image: "" },
+  { id: 23, name: "Widow Maker",       category: "Team Decks",  brand: "Baker",           price: 76.99,  size: "8.25",  rating: 4.5, reviews: 31,  image: "" },
+  { id: 24, name: "Solar Flare",       category: "Pro Models",  brand: "Suburbia",        price: 88.99,  size: "7.75",  rating: 5,   reviews: 95,  image: "" },
+  { id: 25, name: "Old Faithful",      category: "Old School",  brand: "Baker",           price: 55.99,  size: "8.38",  rating: 4,   reviews: 60,  image: "" },
 ];
 
-const categories = [
-  { name: "Pro Models", count: 24 },
-  { name: "Team Decks", count: 12, checked: true },
-  { name: "Cruisers", count: 8 },
-  { name: "Old School", count: 4 },
-];
+const categoryOptions = ["Pro Models", "Team Decks", "Cruisers", "Old School"];
+const brandOptions = ["Suburbia", "Alien Workshop", "Baker", "Santa Cruz"];
+const sizeOptions = ["7.75", "8.0", "8.125", "8.25", "8.38", "8.5"];
 
-const brands = [
-  { name: "Suburbia", checked: true },
-  { name: "Alien Workshop" },
-  { name: "Baker" },
-  { name: "Santa Cruz" },
-];
+const PRODUCTS_PER_PAGE = 12;
 
-const sizes = ["7.75", "8.0", "8.125", "8.25", "8.38", "8.5"];
+// ─── Star Rating Component ──────────────────────────────────────────────────
 
 function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   return (
@@ -106,6 +68,8 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
     </div>
   );
 }
+
+// ─── Product Card Component ─────────────────────────────────────────────────
 
 function ProductCard({ product }: { product: typeof mockProducts[0] }) {
   const { addToCart } = useCart();
@@ -132,14 +96,21 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
           </Link>
         </div>
 
-        {/* Product Image */}
-        <div className="relative h-full w-full">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-contain transform group-hover:scale-105 transition-transform duration-500 drop-shadow-xl"
-          />
+        {/* Product Image Placeholder */}
+        <div className="relative h-full w-full flex items-center justify-center">
+          {product.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={product.image}
+              alt={product.name}
+              className="object-contain w-full h-full transform group-hover:scale-105 transition-transform duration-500 drop-shadow-xl"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-zinc-400 gap-2">
+              <span className="material-icons text-5xl">skateboarding</span>
+              <span className="font-mono text-xs uppercase tracking-wider">No Image</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -175,11 +146,231 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
   );
 }
 
+// ─── Pagination Component ───────────────────────────────────────────────────
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+
+  // Build page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+
+    if (totalPages <= 7) {
+      // Show all pages if 7 or fewer
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("ellipsis");
+      }
+
+      // Pages around current
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("ellipsis");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  const pageNumbers = getPageNumbers();
+
+  return (
+    <div className="mt-16 flex items-center justify-center">
+      <nav className="flex items-center gap-3">
+        {/* Previous Button */}
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`w-12 h-12 flex items-center justify-center bg-white border-2 border-black shadow-sketch transition-colors transform hover:-translate-y-1 ${
+            currentPage === 1
+              ? "opacity-40 cursor-not-allowed hover:translate-y-0"
+              : "text-black hover:bg-black hover:text-white"
+          }`}
+        >
+          <span className="material-icons">chevron_left</span>
+        </button>
+
+        {/* Page Numbers */}
+        {pageNumbers.map((page, idx) =>
+          page === "ellipsis" ? (
+            <span key={`ellipsis-${idx}`} className="text-black font-bold text-2xl px-2 tracking-widest">
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              onClick={() => onPageChange(page)}
+              className={`w-12 h-12 flex items-center justify-center font-display text-xl border-2 border-black shadow-sketch transition-colors ${
+                currentPage === page
+                  ? "bg-background-dark text-white -rotate-2"
+                  : "bg-white text-black hover:bg-gray-100 hover:rotate-2"
+              }`}
+            >
+              {page}
+            </button>
+          )
+        )}
+
+        {/* Next Button */}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`w-12 h-12 flex items-center justify-center bg-white border-2 border-black shadow-sketch transition-colors transform hover:-translate-y-1 ${
+            currentPage === totalPages
+              ? "opacity-40 cursor-not-allowed hover:translate-y-0"
+              : "text-black hover:bg-black hover:text-white"
+          }`}
+        >
+          <span className="material-icons">chevron_right</span>
+        </button>
+      </nav>
+    </div>
+  );
+}
+
+// ─── Main Shop Page ─────────────────────────────────────────────────────────
+
 export default function ShopPage() {
-  const [selectedSize, setSelectedSize] = useState("8.0");
-  const [priceRange, setPriceRange] = useState(90);
+  // Filter states
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState(150);
+
+  // Sort & view states
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("featured");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // ── Toggle helpers ──────────────────────────────────────────────────────
+
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+    setCurrentPage(1);
+  };
+
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands((prev) =>
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+    );
+    setCurrentPage(1);
+  };
+
+  const toggleSize = (size: string) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
+    setCurrentPage(1);
+  };
+
+  // ── Filter + Sort + Paginate pipeline ───────────────────────────────────
+
+  const filteredAndSorted = useMemo(() => {
+    let result = [...mockProducts];
+
+    // Filter by category
+    if (selectedCategories.length > 0) {
+      result = result.filter((p) => selectedCategories.includes(p.category));
+    }
+
+    // Filter by price
+    result = result.filter((p) => p.price <= priceRange);
+
+    // Filter by brand
+    if (selectedBrands.length > 0) {
+      result = result.filter((p) => selectedBrands.includes(p.brand));
+    }
+
+    // Filter by size
+    if (selectedSizes.length > 0) {
+      result = result.filter((p) => selectedSizes.includes(p.size));
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "price-low":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+        result.sort((a, b) => b.id - a.id);
+        break;
+      case "featured":
+      default:
+        // default order (by id ascending)
+        result.sort((a, b) => a.id - b.id);
+        break;
+    }
+
+    return result;
+  }, [selectedCategories, priceRange, selectedBrands, selectedSizes, sortBy]);
+
+  const totalPages = Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const paginatedProducts = filteredAndSorted.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+
+  // Dynamic count text
+  const showingStart = filteredAndSorted.length === 0 ? 0 : startIndex + 1;
+  const showingEnd = Math.min(startIndex + PRODUCTS_PER_PAGE, filteredAndSorted.length);
+  const totalCount = filteredAndSorted.length;
+
+  // Category counts (based on current non-category filters)
+  const categoryCounts = useMemo(() => {
+    let base = [...mockProducts];
+    if (selectedBrands.length > 0) base = base.filter((p) => selectedBrands.includes(p.brand));
+    if (selectedSizes.length > 0) base = base.filter((p) => selectedSizes.includes(p.size));
+    base = base.filter((p) => p.price <= priceRange);
+
+    const counts: Record<string, number> = {};
+    categoryOptions.forEach((cat) => {
+      counts[cat] = base.filter((p) => p.category === cat).length;
+    });
+    return counts;
+  }, [selectedBrands, selectedSizes, priceRange]);
+
+  // Page change handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Sort change handler (resets page)
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    setCurrentPage(1);
+  };
+
+  // Price change handler (resets page)
+  const handlePriceChange = (value: number) => {
+    setPriceRange(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="bg-background-light min-h-screen">
@@ -197,7 +388,7 @@ export default function ShopPage() {
                 Shop Decks
               </h1>
               <p className="font-mono text-zinc-600 text-base mt-2 ml-2 transform rotate-1">
-                _Showing 1-12 of 48 products_
+                _Showing {showingStart}-{showingEnd} of {totalCount} products_
               </p>
             </div>
           </div>
@@ -207,7 +398,7 @@ export default function ShopPage() {
             <div className="relative bg-white border-2 border-background-dark shadow-sketch">
               <select 
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => handleSortChange(e.target.value)}
                 className="appearance-none bg-transparent text-sm font-bold font-mono pl-4 pr-12 py-3 outline-none cursor-pointer uppercase tracking-wider"
               >
                 <option value="featured">Sort by: Featured</option>
@@ -247,17 +438,18 @@ export default function ShopPage() {
                 <span className="material-icons">remove</span>
               </h3>
               <div className="space-y-3 pl-2">
-                {categories.map((cat) => (
-                  <label key={cat.name} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
+                {categoryOptions.map((cat) => (
+                  <label key={cat} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
                     <input
                       type="checkbox"
-                      defaultChecked={cat.checked}
+                      checked={selectedCategories.includes(cat)}
+                      onChange={() => toggleCategory(cat)}
                       className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
                     />
-                    <span className={`ml-3 ${cat.checked ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
-                      {cat.name}
+                    <span className={`ml-3 ${selectedCategories.includes(cat) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
+                      {cat}
                     </span>
-                    <span className="ml-auto font-mono text-sm bg-black text-white px-1 rounded-sm">{cat.count}</span>
+                    <span className="ml-auto font-mono text-sm bg-black text-white px-1 rounded-sm">{categoryCounts[cat]}</span>
                   </label>
                 ))}
               </div>
@@ -272,7 +464,7 @@ export default function ShopPage() {
                   min="40"
                   max="150"
                   value={priceRange}
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
+                  onChange={(e) => handlePriceChange(Number(e.target.value))}
                   className="w-full bg-transparent appearance-none cursor-pointer"
                   style={{
                     background: `linear-gradient(to right, #1a1a1a ${((priceRange - 40) / 110) * 100}%, #e5e5e5 ${((priceRange - 40) / 110) * 100}%)`
@@ -290,15 +482,16 @@ export default function ShopPage() {
             <div className="relative">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Brand</h3>
               <div className="space-y-3 pl-2">
-                {brands.map((brand) => (
-                  <label key={brand.name} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
+                {brandOptions.map((brand) => (
+                  <label key={brand} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
                     <input
                       type="checkbox"
-                      defaultChecked={brand.checked}
+                      checked={selectedBrands.includes(brand)}
+                      onChange={() => toggleBrand(brand)}
                       className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
                     />
-                    <span className={`ml-3 ${brand.checked ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
-                      {brand.name}
+                    <span className={`ml-3 ${selectedBrands.includes(brand) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
+                      {brand}
                     </span>
                   </label>
                 ))}
@@ -309,12 +502,12 @@ export default function ShopPage() {
             <div>
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Size</h3>
               <div className="grid grid-cols-3 gap-3">
-                {sizes.map((size) => (
+                {sizeOptions.map((size) => (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => toggleSize(size)}
                     className={`px-1 py-2 text-sm font-bold font-mono border-2 transition-colors ${
-                      selectedSize === size
+                      selectedSizes.includes(size)
                         ? "border-black bg-background-dark text-white transform -rotate-2 shadow-[2px_2px_0_0_#ccc]"
                         : "border-dashed border-gray-400 text-gray-500 hover:border-black hover:text-black bg-white"
                     }`}
@@ -328,36 +521,26 @@ export default function ShopPage() {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"} gap-8`}>
-              {mockProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            {paginatedProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <span className="material-icons text-7xl text-zinc-300 mb-4">search_off</span>
+                <h3 className="font-display text-2xl text-zinc-500 mb-2">No products found</h3>
+                <p className="font-mono text-sm text-zinc-400">Try adjusting your filters to find what you&apos;re looking for.</p>
+              </div>
+            ) : (
+              <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"} gap-8`}>
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="mt-16 flex items-center justify-center">
-              <nav className="flex items-center gap-3">
-                <button className="w-12 h-12 flex items-center justify-center bg-white border-2 border-black shadow-sketch text-black hover:bg-black hover:text-white transition-colors transform hover:-translate-y-1">
-                  <span className="material-icons">chevron_left</span>
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center bg-background-dark text-white font-display text-xl border-2 border-black shadow-sketch -rotate-2">
-                  1
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center bg-white text-black font-display text-xl border-2 border-black shadow-sketch hover:bg-gray-100 transition-colors rotate-2">
-                  2
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center bg-white text-black font-display text-xl border-2 border-black shadow-sketch hover:bg-gray-100 transition-colors">
-                  3
-                </button>
-                <span className="text-black font-bold text-2xl px-2 tracking-widest">...</span>
-                <button className="w-12 h-12 flex items-center justify-center bg-white text-black font-display text-xl border-2 border-black shadow-sketch hover:bg-gray-100 transition-colors hover:rotate-2">
-                  8
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center bg-white border-2 border-black shadow-sketch text-black hover:bg-black hover:text-white transition-colors transform hover:-translate-y-1">
-                  <span className="material-icons">chevron_right</span>
-                </button>
-              </nav>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </main>
