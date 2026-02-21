@@ -39,6 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
+    // Profile Management
+    Route::put('/user/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/user/avatar', [AuthController::class, 'updateAvatar']);
+    Route::put('/user/password', [AuthController::class, 'updatePassword']);
+    Route::put('/user/notifications', [AuthController::class, 'updateNotifications']);
+
     // Saved Designs (My Garage)
     Route::apiResource('/user/designs', SavedDesignController::class);
 

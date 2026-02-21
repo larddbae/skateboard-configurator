@@ -20,8 +20,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'display_name',
         'email',
+        'phone',
+        'avatar',
         'password',
+        'notify_order_updates',
+        'notify_product_drops',
+        'notify_community_news',
     ];
 
     /**
@@ -44,6 +50,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notify_order_updates' => 'boolean',
+            'notify_product_drops' => 'boolean',
+            'notify_community_news' => 'boolean',
         ];
     }
 

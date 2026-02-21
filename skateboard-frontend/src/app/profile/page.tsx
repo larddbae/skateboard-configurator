@@ -1,34 +1,160 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import * as api from "@/lib/api";
 import Link from "next/link";
-import clsx from "clsx";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// Strip /api suffix to get server base URL for storage/assets
+const SERVER_BASE_URL = API_URL.replace(/\/api\/?$/, '');
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  
-  // Form states matching existing logic but with new design
+  const { user, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Form states
   const [name, setName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
-  
+  const [phone, setPhone] = useState("");
+
+  // Avatar states
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
   // Password states
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Notification states
+  const [notifyOrderUpdates, setNotifyOrderUpdates] = useState(true);
+  const [notifyProductDrops, setNotifyProductDrops] = useState(true);
+  const [notifyCommunityNews, setNotifyCommunityNews] = useState(false);
+
+  // UI states
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Initialize form from user data
   useEffect(() => {
-    // Auth check logic
     if (!authLoading && !isAuthenticated) {
       router.push("/auth/login");
     }
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
+      setName(user.name || "");
+      setDisplayName(user.display_name || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setNotifyOrderUpdates(user.notify_order_updates ?? true);
+      setNotifyProductDrops(user.notify_product_drops ?? true);
+      setNotifyCommunityNews(user.notify_community_news ?? false);
+      setAvatarPreview(null);
+      setAvatarFile(null);
     }
   }, [authLoading, isAuthenticated, user, router]);
+
+  // Reset form to original user values
+  const handleCancel = () => {
+    if (user) {
+      setName(user.name || "");
+      setDisplayName(user.display_name || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setNotifyOrderUpdates(user.notify_order_updates ?? true);
+      setNotifyProductDrops(user.notify_product_drops ?? true);
+      setNotifyCommunityNews(user.notify_community_news ?? false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      setSaveMessage(null);
+    }
+  };
+
+  // Handle avatar file select
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Get the avatar URL to display
+  const getAvatarUrl = () => {
+    if (avatarPreview) return avatarPreview;
+    if (user?.avatar) {
+      // If avatar starts with /storage/, prepend API base URL
+      if (user.avatar.startsWith('/storage/')) {
+        return `${SERVER_BASE_URL}${user.avatar}`;
+      }
+      return user.avatar;
+    }
+    return "https://lh3.googleusercontent.com/aida-public/AB6AXuB5aZ3ceyUBPfaM2eXVOF4HzkSi_ybHaV5lA55QqyUWU3koOMAvufkg2FKjP2eir4CiLd_p39kPeI2UTuwMFZTosQUwDVDyncWSm525Gj4f3TkLgtgKzhklFCKlc1DJ-XBJhTkH_eEHi7JRsVjspx1YnZHRDpGTYqZ1_Bz8hBx1NniqRtxlUdhtuACTnu0SsiTpZk99rsnqWXCMBcIB99ZbcZkuYOOn4CsjHEv5KtVTKD-6vsWQT36pCBe8AINl_eyrSj3jnohox_U";
+  };
+
+  // Handle save all changes
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMessage(null);
+
+    try {
+      // 1. Update profile info
+      await api.updateProfile({
+        name,
+        display_name: displayName || undefined,
+        email,
+        phone: phone || undefined,
+      });
+
+      // 2. Upload avatar if changed
+      if (avatarFile) {
+        await api.uploadAvatar(avatarFile);
+      }
+
+      // 3. Update password if filled
+      if (currentPassword && newPassword) {
+        if (newPassword !== confirmPassword) {
+          setSaveMessage({ type: 'error', text: 'New password and confirmation do not match!' });
+          setSaving(false);
+          return;
+        }
+        await api.updatePassword(currentPassword, newPassword, confirmPassword);
+        // Clear password fields after successful update
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+
+      // 4. Update notifications
+      await api.updateNotifications({
+        notify_order_updates: notifyOrderUpdates,
+        notify_product_drops: notifyProductDrops,
+        notify_community_news: notifyCommunityNews,
+      });
+
+      // Refresh user data in context
+      await refreshUser();
+      setAvatarFile(null);
+      setAvatarPreview(null);
+
+      setSaveMessage({ type: 'success', text: 'All changes saved successfully! 🛹' });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setSaveMessage({ type: 'error', text: errorMessage });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -38,9 +164,6 @@ export default function ProfilePage() {
     );
   }
 
-  // NOTE: This page implements the specific "Suburbia Skate - Account Settings" design
-  // The Sidebar is included here as it appears to be a specific layout for this section in the design.
-  
   return (
     <div className="bg-zine-lavender bg-grain text-ink min-h-screen flex antialiased selection:bg-primary selection:text-white font-sans overflow-hidden">
         {/* Background Decorative Elements */}
@@ -68,11 +191,11 @@ export default function ProfilePage() {
                     <img 
                         alt="User Avatar" 
                         className="w-full h-full object-cover grayscale contrast-125" 
-                        src={user?.avatar || "https://lh3.googleusercontent.com/aida-public/AB6AXuA4F7mzBtN8ZBSq9kwq7kQtYwQPAz3SGFTGDqeWnMPhMJkHZgEpdapZTFUQZ5-EHy5noR3mUOzDkIY0-MaZDyQazCEkF1cuzdqWTI9dfH0FgA-qW2TkTbNskXhlHAP-h51ApKFgE18nAr8GESb2F8mdGW8M3JzA_GX3__ePcnNT2ABRJ3F9jGDfvumcjbw6i9Dpz2BPMLMzLCCb4bmsCuQlQlqwoDUFCw38d5YqizmPQzImqei8GWNk2r3xHAuJ2gsw-Y7sc3hCM_I"}
+                        src={getAvatarUrl()}
                     />
                 </div>
                 <h2 className="font-display text-2xl uppercase tracking-wide bg-ink text-white px-2 py-0.5 -rotate-1">{user?.name || "Guest"}</h2>
-                <p className="text-sm text-ink font-mono mt-2 bg-secondary/50 px-2 rotate-1">@{user?.name?.toLowerCase().replace(/\s+/g, '.') || "guest"}</p>
+                <p className="text-sm text-ink font-mono mt-2 bg-secondary/50 px-2 rotate-1">@{user?.display_name || user?.name?.toLowerCase().replace(/\s+/g, '.') || "guest"}</p>
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-2">
@@ -109,17 +232,20 @@ export default function ProfilePage() {
 
         {/* Main Content */}
         <main className="flex-1 ml-64 p-8 lg:p-12 max-w-5xl z-10 relative overflow-y-auto h-screen">
-            <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative">
+            <header className="mb-12 relative">
                 <div className="absolute -top-6 left-20 w-32 h-8 bg-yellow-200/40 rotate-2 transform z-20 backdrop-blur-[1px]"></div>
                 <div>
                     <h1 className="text-6xl font-display uppercase tracking-tight text-ink mb-1 drop-shadow-[4px_4px_0_rgba(255,255,255,1)]">Profile Settings</h1>
                     <p className="text-ink font-mono text-sm bg-white inline-block px-2 py-1 border border-ink rotate-1">Manage your account details and stuff.</p>
                 </div>
-                <div className="flex gap-4 items-center">
-                    <Link href="/" className="font-hand font-bold text-ink hover:underline decoration-wavy underline-offset-4 decoration-primary px-2">Cancel</Link>
-                    <button className="px-6 py-2 bg-primary hover:bg-orange-500 text-white font-display uppercase tracking-wider text-lg border-2 border-ink shadow-[4px_4px_0_0_#1a1a1a] transition-all active:shadow-[2px_2px_0_0_#1a1a1a] active:translate-y-1 rotate-1">Save Changes</button>
-                </div>
             </header>
+
+            {/* Save message feedback */}
+            {saveMessage && (
+                <div className={`mb-6 px-4 py-3 border-2 border-ink font-mono text-sm ${saveMessage.type === 'success' ? 'bg-secondary/30 text-ink' : 'bg-red-100 text-red-700'}`}>
+                    {saveMessage.text}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-20">
                 {/* Profile Card Col */}
@@ -127,12 +253,12 @@ export default function ProfilePage() {
                     <div className="bg-paper bg-grain p-6 border-2 border-ink shadow-[8px_8px_0_0_rgba(0,0,0,0.1)] relative -rotate-1 hand-drawn-border">
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500 border-2 border-ink shadow-sm z-20"></div>
                         <div className="flex flex-col items-center text-center pt-4">
-                            <div className="relative group cursor-pointer mb-6">
+                            <div className="relative group cursor-pointer mb-6" onClick={() => fileInputRef.current?.click()}>
                                 <div className="w-40 h-40 rounded-full overflow-hidden border-[5px] border-ink shadow-xl bg-white">
                                     <img 
                                         alt="Profile Picture" 
                                         className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 transition-all duration-500" 
-                                        src={user?.avatar || "https://lh3.googleusercontent.com/aida-public/AB6AXuB5aZ3ceyUBPfaM2eXVOF4HzkSi_ybHaV5lA55QqyUWU3koOMAvufkg2FKjP2eir4CiLd_p39kPeI2UTuwMFZTosQUwDVDyncWSm525Gj4f3TkLgtgKzhklFCKlc1DJ-XBJhTkH_eEHi7JRsVjspx1YnZHRDpGTYqZ1_Bz8hBx1NniqRtxlUdhtuACTnu0SsiTpZk99rsnqWXCMBcIB99ZbcZkuYOOn4CsjHEv5KtVTKD-6vsWQT36pCBe8AINl_eyrSj3jnohox_U"}
+                                        src={getAvatarUrl()}
                                     />
                                 </div>
                                 <div className="absolute inset-0 bg-primary/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-[5px] border-transparent">
@@ -141,18 +267,27 @@ export default function ProfilePage() {
                                 <div className="absolute bottom-1 right-2 bg-secondary text-ink p-2 rounded-full border-2 border-ink shadow-[2px_2px_0_0_#000] rotate-12 hover:rotate-0 transition-transform">
                                     <span className="material-symbols-outlined text-xl block">edit</span>
                                 </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                    className="hidden"
+                                    onChange={handleAvatarChange}
+                                />
                             </div>
-                            <h3 className="text-3xl font-display text-ink uppercase tracking-wide mb-1 -rotate-1">{user?.name || "Sophie Castillo"}</h3>
+                            <h3 className="text-3xl font-display text-ink uppercase tracking-wide mb-1 -rotate-1">{name || user?.name || "Guest"}</h3>
                             <span className="inline-block bg-ink text-white text-xs font-mono px-2 py-1 rotate-2">Pro Skater Member</span>
                             <div className="w-full h-px border-b-2 border-dashed border-ink my-6 opacity-30"></div>
                             <div className="w-full text-left space-y-3 font-hand">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-ink/60 font-bold">Joined:</span>
-                                    <span className="text-ink font-bold border-b-2 border-secondary/50">Nov 2023</span>
+                                    <span className="text-ink font-bold border-b-2 border-secondary/50">
+                                        {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-ink/60 font-bold">Location:</span>
-                                    <span className="text-ink font-bold border-b-2 border-primary/50">Metro City, USA</span>
+                                    <span className="text-ink/60 font-bold">Display:</span>
+                                    <span className="text-ink font-bold border-b-2 border-primary/50">@{displayName || user?.name?.toLowerCase().replace(/\s+/g, '.') || "guest"}</span>
                                 </div>
                             </div>
                         </div>
@@ -182,12 +317,14 @@ export default function ProfilePage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-hand font-bold text-ink" htmlFor="username">Display Name</label>
+                                    <label className="block text-sm font-hand font-bold text-ink" htmlFor="displayName">Display Name</label>
                                     <input 
                                         className="w-full bg-white border-2 border-ink rounded-none px-4 py-3 focus:border-primary focus:ring-0 focus:shadow-[4px_4px_0_0_#ff6b35] transition-all text-ink font-mono placeholder-gray-400" 
-                                        id="username" 
+                                        id="displayName" 
                                         type="text" 
-                                        defaultValue="sophie.skates"
+                                        placeholder="e.g. sophie.skates"
+                                        value={displayName}
+                                        onChange={(e) => setDisplayName(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
@@ -211,7 +348,9 @@ export default function ProfilePage() {
                                             className="w-full bg-white border-2 border-ink rounded-none pl-10 pr-4 py-3 focus:border-primary focus:ring-0 focus:shadow-[4px_4px_0_0_#ff6b35] transition-all text-ink font-mono placeholder-gray-400" 
                                             id="phone" 
                                             type="tel" 
-                                            defaultValue="+1 (555) 012-3456"
+                                            placeholder="+1 (555) 012-3456"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -235,6 +374,7 @@ export default function ProfilePage() {
                                         className="w-full bg-white border-2 border-ink rounded-none px-4 py-3 focus:border-primary focus:ring-0 focus:shadow-[4px_4px_0_0_#ff6b35] transition-all text-ink font-mono placeholder-gray-400" 
                                         id="currentPass" 
                                         type="password"
+                                        placeholder="Enter current password"
                                         value={currentPassword}
                                         onChange={(e) => setCurrentPassword(e.target.value)}
                                     />
@@ -245,6 +385,7 @@ export default function ProfilePage() {
                                         className="w-full bg-white border-2 border-ink rounded-none px-4 py-3 focus:border-primary focus:ring-0 focus:shadow-[4px_4px_0_0_#ff6b35] transition-all text-ink font-mono placeholder-gray-400" 
                                         id="newPass" 
                                         type="password"
+                                        placeholder="Min 8 characters"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
                                     />
@@ -255,6 +396,7 @@ export default function ProfilePage() {
                                         className="w-full bg-white border-2 border-ink rounded-none px-4 py-3 focus:border-primary focus:ring-0 focus:shadow-[4px_4px_0_0_#ff6b35] transition-all text-ink font-mono placeholder-gray-400" 
                                         id="confirmPass" 
                                         type="password"
+                                        placeholder="Confirm new password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                     />
@@ -278,7 +420,12 @@ export default function ProfilePage() {
                                     <p className="text-xs font-mono text-ink/70 mt-1">Where is my stuff?</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
-                                    <input defaultChecked className="sr-only peer" type="checkbox" />
+                                    <input 
+                                        checked={notifyOrderUpdates} 
+                                        onChange={(e) => setNotifyOrderUpdates(e.target.checked)}
+                                        className="sr-only peer" 
+                                        type="checkbox" 
+                                    />
                                     <div className="w-14 h-8 bg-gray-200 border-2 border-ink peer-focus:outline-none peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-ink after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-ink after:border-2 after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-secondary"></div>
                                 </label>
                             </div>
@@ -289,7 +436,12 @@ export default function ProfilePage() {
                                     <p className="text-xs font-mono text-ink/70 mt-1">Fresh decks & gear.</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
-                                    <input defaultChecked className="sr-only peer" type="checkbox" />
+                                    <input 
+                                        checked={notifyProductDrops} 
+                                        onChange={(e) => setNotifyProductDrops(e.target.checked)}
+                                        className="sr-only peer" 
+                                        type="checkbox" 
+                                    />
                                     <div className="w-14 h-8 bg-gray-200 border-2 border-ink peer-focus:outline-none peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-ink after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-ink after:border-2 after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-secondary"></div>
                                 </label>
                             </div>
@@ -300,16 +452,32 @@ export default function ProfilePage() {
                                     <p className="text-xs font-mono text-ink/70 mt-1">Local gossip & events.</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
-                                    <input className="sr-only peer" type="checkbox" />
+                                    <input 
+                                        checked={notifyCommunityNews} 
+                                        onChange={(e) => setNotifyCommunityNews(e.target.checked)}
+                                        className="sr-only peer" 
+                                        type="checkbox" 
+                                    />
                                     <div className="w-14 h-8 bg-gray-200 border-2 border-ink peer-focus:outline-none peer-focus:ring-0 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-ink after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-ink after:border-2 after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-secondary"></div>
                                 </label>
                             </div>
                         </div>
                     </section>
 
-                    <div className="flex justify-end pt-8 pb-12">
-                        <button className="w-full md:w-auto px-10 py-4 bg-primary hover:bg-orange-600 text-white font-display uppercase tracking-widest text-xl border-2 border-ink shadow-[6px_6px_0_0_#1a1a1a] transition-all transform active:translate-y-1 active:shadow-[2px_2px_0_0_#1a1a1a] -rotate-1">
-                            Save Changes
+                    {/* Bottom Actions */}
+                    <div className="flex justify-end gap-4 items-center pt-8 pb-12">
+                        <button 
+                            onClick={handleCancel}
+                            className="px-8 py-4 bg-white hover:bg-gray-100 text-ink font-display uppercase tracking-widest text-xl border-2 border-ink shadow-[4px_4px_0_0_#1a1a1a] transition-all transform active:translate-y-1 active:shadow-[2px_2px_0_0_#1a1a1a] rotate-1"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="w-full md:w-auto px-10 py-4 bg-primary hover:bg-orange-600 text-white font-display uppercase tracking-widest text-xl border-2 border-ink shadow-[6px_6px_0_0_#1a1a1a] transition-all transform active:translate-y-1 active:shadow-[2px_2px_0_0_#1a1a1a] -rotate-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>

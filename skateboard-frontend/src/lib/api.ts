@@ -164,6 +164,88 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
+export async function updateProfile(data: {
+  name: string;
+  display_name?: string;
+  email: string;
+  phone?: string;
+}): Promise<User> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/user/profile`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update profile');
+  }
+
+  const result = await response.json();
+  return result.user;
+}
+
+export async function uploadAvatar(file: File): Promise<User> {
+  const token = getAuthToken();
+  const formData = new FormData();
+  formData.append('avatar', file);
+
+  const response = await fetch(`${API_BASE_URL}/user/avatar`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to upload avatar');
+  }
+
+  const result = await response.json();
+  return result.user;
+}
+
+export async function updatePassword(
+  currentPassword: string,
+  newPassword: string,
+  newPasswordConfirmation: string
+): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/user/password`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+      new_password_confirmation: newPasswordConfirmation,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update password');
+  }
+}
+
+export async function updateNotifications(prefs: {
+  notify_order_updates: boolean;
+  notify_product_drops: boolean;
+  notify_community_news: boolean;
+}): Promise<User> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/user/notifications`, {
+    method: 'PUT',
+    body: JSON.stringify(prefs),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update notifications');
+  }
+
+  const result = await response.json();
+  return result.user;
+}
+
 // ============ SAVED DESIGNS API (My Garage) ============
 
 export async function fetchDesigns(): Promise<SavedDesign[]> {
