@@ -6,22 +6,25 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 
 // Mock Data for this specific product
+// To use your own images:
+//   1. Place images in /public/images/products/ (e.g. ghost-ride-1.jpg)
+//   2. The paths below already point to /images/products/...
+//   3. The Image component will load them from the public folder
 const product = {
   id: "1",
   name: "The Ghost Ride Pro",
   subtitle: "Pro Model",
-  designer: "@alienz",
   price: 74.99,
   rating: 4.5,
   reviews: 42,
   description:
     "Not just a board, that's as real as the places you take it. Featuring our signature \"Pop-Forever\" maple construction. Designed to handle the grittiest street spots and the smoothest bowls.",
   images: [
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBGAVL8BHVBmks65EOUg4ZN6qSA560uPIunP-x3AV8oHiITlolkRMCDrcK3saougbjBekhTukqcC1KqqlhXp-yQbBvvorQ1Jc_p71Qmvq93tJFdHvCrx590euMLE4r8P4exl3rssrXEOSWLlD7ZwBaVHN3h4L7nPNszu6PY8CDWgtzB7faUqBsgJvolgffph1uqq1JrWu8HZ6KL8v8VRKmO_yI4US2rxVEfEHrL_HGMWCzJ24RAlwJNerV4IVxnFbMw4kIi6aiiPxU",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAivdu-MHluxmBesEg2ju6xANLTrno4Vxyh8GMM_wPnAdIn7wjnvo_cupYh4cQPEni4ieHI-mhlyFxYrAxrHVJ8SyPxSKP1CGfNkuNnUQ6aFrGt7QSDEucS-i40Xkh6CPuVUf_ZfK28GAxIi3mrLEkOpTrEFRcp4zevqYuKbl9lqf6wphfK2AJFAIEY0LCPUhLmE2YbJbMHI3BtAqjYMuaVRf-lhgw9DLZToD7sFXdcJ0RZ3t_ah01dLaf6UZU8MtTY3BdLp-J2xVw",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBSML9hKkk0EXlhL-G8px6cqUkB8AMrlP2iK85Q_djVfs_Wz0yTw6FF0tU_LSkPi8V79pH-hIaWRrRp6qp2cQIUfxNz_XH_2xcB9U_dDGLlMYgFZiPAt6h4pAcp_Ld-fXpFrX9T7GWGEAWPyV2G9mp76wBwpVOs3k8VVR4j2LKHFIu2cT1Cr7OmNUxcsOMmNZhwbF9yJEWd4iZsDuzheJweJifHdAzH0dX1QGVqm2nk6jYSLl5Lz5O-SYP5VMA6Ij4fUNQK0B-1sB8",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCYErWCVIOjp7yc0o0aILQU7RhntCmbA5mQruGs22P02o7qgbMTle5CTvZxrUWVWQ_9KSy74SXJL5HJiz6Vj_NjNV1Gw_SvjcKUm7qkUExJbgmvLGNWJM2eWzb5bLeF1MFY1nMkQj71Mtm83fScJp2inpe12gnXGuc98lWYCbzU_dDGLlMYgFZiPAt6h4pAcp_Ld-fXpFrX9T7GWGEAWPyV2G9mp76wBwpVOs3k8VVR4j2LKHFIu2cT1Cr7OmNUxcsOMmNZhwbF9yJEWd4iZsDuzheJweJifHdAzH0dX1QGVqm2nk6jYSLl5Lz5O-SYP5VMA6Ij4fUNQK0B-1sB8",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDQZ_aAJXkz76TJYXbaOwGHfPwQeYYwvpFMGkvzRPYGmAil4m3G7UrkgBFqHYRSFso2z8L4uu9-ePMgV0FdIpv0ShhkIU8zFKonzEXgp-_d4aSF1VP5Za_elPUVxyhoFX3NFzOo-aulUE2zPpLV7e5L8GMurckXglIjTtxzRRVX5WBX2X-jYJFCXxXWscnrAGpXWIIkkW3BcJVGIk7sksUx7A41ZE06pYf8UTB7NNnPITQxqZ6gZ-fxNEfY22oSK1GIlGDCKBVa5Ek",
+    "/images/products/ghost-ride-1.jpg",
+    "/images/products/ghost-ride-2.jpg",
+    "/images/products/ghost-ride-3.jpg",
+    "/images/products/ghost-ride-4.jpg",
+    "/images/products/ghost-ride-5.jpg",
   ],
   specs: [
     { label: "Concave", value: "Medium Steep" },
@@ -31,7 +34,19 @@ const product = {
     { label: "Tail", value: "6.625\"" },
   ],
   shapeDesc: "The 'Ghost Ride' shape is built for technical street skating. The slightly steeper concave gives you that extra snap on your ollies, while the tapered nose helps with quick flip tricks. It's a classic popsicle shape refined for the modern era.",
-  tags: ["#Street", "#Tech", "#Park"]
+  tags: ["#Street", "#Tech", "#Park"],
+  artistBio: {
+    name: "@alienz",
+    realName: "Alex \"Alienz\" Rivera",
+    avatar: "/images/products/artist-avatar.jpg",
+    bio: "Born and raised in East LA, Alex has been creating art inspired by street culture and sci-fi since the age of 14. His unique style blends geometric precision with organic, otherworldly forms — earning him the nickname \"Alienz\" in the local skate scene. He's collaborated with brands like Thrasher, Vans, and now Suburbia to bring his vision to the board.",
+    style: "Geometric / Alien Surrealism",
+    location: "Los Angeles, CA",
+    socials: {
+      instagram: "@alienz.art",
+      website: "alienz-art.com",
+    },
+  },
 };
 
 const relatedProducts = [
@@ -39,39 +54,129 @@ const relatedProducts = [
     id: 101,
     name: "Demon Slayer 8.0\"",
     price: 59.99,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAlshLxksLBmR70svpGGypqsnF43pQf2jfr31FGuEf03l_JEV2J9M2kt6dNek0StHtpT_vojmgEk2R2LJOk3FwhEiQoHVKzDeIz0hVNSy36feLR3I3AGU2hP2-tQxFua-FXq82y7fYPkil5da6waXlmVUJt5QK9VX4CovaBM8PDuH0jpgtDVhWXSlt6XwOmGfrUQwPrscc20hm0ldzodObXkiTNj3WJ47UTGNp3QryVWv3vabMzSDVfxib8hnkw87swZjt2-V4XXn8"
+    image: "/images/products/demon-slayer.jpg"
   },
   {
     id: 102,
     name: "Pink Fury 8.25\"",
     price: 89.99,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCCrMs0a2xLuvqscrhvwlkb6BApPkPQfJIKbrG_0wLC_CJzdUwrcR4lR1muzmKZDYdTqwuf5M15YVL2raH3Pw17uu_DHYOCPtASObLtzL3syHr5uwCGIy9YGZEm_zFu7Y7T0p8absKLIOWfh_l48S4SgEmW_QUxKewPxKRmfxzs-EXdu1cN_CezcaE7UOuHck_PrTAv2frOfeg70ZbzivL9jnHClGmy8RTsjMtAAhkUrHb9V-OAChBnuoJSee7jdWFbLuu7vWOBNmo",
+    image: "/images/products/pink-fury.jpg",
     badge: "HOT"
   },
   {
     id: 103,
     name: "Thank You Repeat",
     price: 69.99,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDRu4hZekIMnAo7_oyn4a8Nqy72EquePkp1BosoZPo8EyvF96BUIh8F7_Zah9hkCDibYdUIzIysUQ05sdZUGBLQ8eweTF0eDK0eA1kR1-tb7yBzE5zkanwQVnb91GYeowZMSLRKgBGJ7mhK8zy6ov5S-Fs5XhxO_Q20zlGY6Dg_YATNI6Bq4-CzMafae-tvMBXDEjiSWYtjH7zzq3qL7VldLGlR6AE6oBZbRzscOLVQiiePgoEdkMON0dXVaz6elMHlo4wm_0cq_P0"
+    image: "/images/products/thank-you-repeat.jpg"
   },
   {
     id: 104,
     name: "Yellow Haze 8.5\"",
     price: 79.99,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBmbjWThxgDXf9wa5SZL-_58MWHF8WBFOl9J5_30atU0hit1F6dpKgsq3syS5eNZzv6BNdg_NrXtnJdacGx8cKeMselYtERNb2sty9oyT8fi_GNuyMRsOpsEjJhdS0dy5chC2_YBnzM_rsr0tM3N0CqFao4osb6STXAa6de6rgmig9Yrp6kaZFymWXSIrjgMqic_kEJF7RJ70_rJTfyY1dO2xxsSTFpmAhUuAlk2CAovMtu1IJLpPTLvW2UU_IllKjatLeRWtnPNh8"
+    image: "/images/products/yellow-haze.jpg"
   }
+];
+
+// Size Guide Data
+const sizeGuideData = [
+  { width: "7.5\" - 7.75\"", height: "5'0\" - 5'4\"", shoeSize: "6 - 8 US", style: "Technical / Street" },
+  { width: "7.875\" - 8.0\"", height: "5'4\" - 5'8\"", shoeSize: "8 - 10 US", style: "Street / All-Around" },
+  { width: "8.0\" - 8.25\"", height: "5'6\" - 5'10\"", shoeSize: "9 - 11 US", style: "Street / Transition" },
+  { width: "8.25\" - 8.5\"", height: "5'8\" - 6'2\"", shoeSize: "10 - 12 US", style: "Transition / Bowl" },
+  { width: "8.5\" +", height: "6'0\" +", shoeSize: "11+ US", style: "Pool / Cruising" },
 ];
 
 export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("8.0\"");
   const [gripTape, setGripTape] = useState("free");
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"specs" | "artist" | "video">("specs");
   const { addToCart } = useCart();
 
   return (
     <div className="bg-background-light text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white">
       {/* Background Texture Overlay */}
       <div className="fixed inset-0 pointer-events-none opacity-40 mix-blend-multiply z-50 bg-paper-texture"></div>
+
+      {/* ══════════ Size Guide Modal ══════════ */}
+      {sizeGuideOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSizeGuideOpen(false)}
+          />
+          {/* Modal */}
+          <div className="relative bg-white rough-border shadow-brutal-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-black text-white px-6 py-4 flex items-center justify-between">
+              <h2 className="font-anton text-3xl uppercase tracking-wide">Size Guide</h2>
+              <button
+                onClick={() => setSizeGuideOpen(false)}
+                className="text-white hover:text-primary transition-colors"
+              >
+                <span className="material-icons text-3xl">close</span>
+              </button>
+            </div>
+
+            <div className="p-6">
+              {/* Intro */}
+              <p className="font-mono text-sm text-gray-600 mb-6 border-l-4 border-primary pl-4">
+                Not sure what size to pick? Use this guide to find the perfect deck width based on your height, shoe size, and riding style.
+              </p>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm font-mono border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="text-left px-4 py-3 font-bebas text-lg tracking-wide border-b-2 border-black">Deck Width</th>
+                      <th className="text-left px-4 py-3 font-bebas text-lg tracking-wide border-b-2 border-black">Rider Height</th>
+                      <th className="text-left px-4 py-3 font-bebas text-lg tracking-wide border-b-2 border-black">Shoe Size</th>
+                      <th className="text-left px-4 py-3 font-bebas text-lg tracking-wide border-b-2 border-black">Best For</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sizeGuideData.map((row, idx) => (
+                      <tr
+                        key={idx}
+                        className={`border-b border-dashed border-gray-300 hover:bg-brand-pink/20 transition-colors ${
+                          selectedSize.startsWith(row.width.substring(0, 3)) ? "bg-primary/10 font-bold" : ""
+                        }`}
+                      >
+                        <td className="px-4 py-3">{row.width}</td>
+                        <td className="px-4 py-3">{row.height}</td>
+                        <td className="px-4 py-3">{row.shoeSize}</td>
+                        <td className="px-4 py-3">{row.style}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Tips */}
+              <div className="mt-6 bg-gray-50 rough-border-sm p-4">
+                <h4 className="font-marker text-lg text-primary mb-2 transform -rotate-1">Pro Tips 💡</h4>
+                <ul className="space-y-2 text-sm font-mono text-gray-600">
+                  <li className="flex gap-2">
+                    <span className="material-icons text-sm text-secondary mt-0.5">chevron_right</span>
+                    Wider decks = more stability for transition skating & bigger feet
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="material-icons text-sm text-secondary mt-0.5">chevron_right</span>
+                    Narrower decks = lighter weight & easier flip tricks
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="material-icons text-sm text-secondary mt-0.5">chevron_right</span>
+                    When in doubt, go with 8.0&quot; — it&apos;s the most versatile size
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="relative z-10 pt-12 pb-24">
          {/* Background Text Overlay */}
@@ -98,12 +203,13 @@ export default function ProductDetailPage() {
                 <div className="absolute top-4 right-4 z-20">
                   <span className="bg-yellow-400 text-black font-marker px-3 py-1 text-lg transform rotate-6 inline-block shadow-sm">Best Seller!</span>
                 </div>
-                <div className="relative w-full h-[600px]">
+                <div className="relative w-full h-[600px] bg-gray-100 flex items-center justify-center">
                    <Image
                     src={product.images[selectedImage]}
                     alt="Main Product Image"
                     fill
                     className="object-contain transform group-hover:scale-105 transition-transform duration-500"
+                    unoptimized
                    />
                 </div>
               </div>
@@ -115,14 +221,14 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedImage(idx + 1)}
                     className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 ${selectedImage === idx + 1 ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
                   >
-                    <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain" />
+                    <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain" unoptimized />
                   </button>
                 ))}
                  <button
                     onClick={() => setSelectedImage(4)}
                     className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 overflow-hidden ${selectedImage === 4 ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
                   >
-                     <Image src={product.images[4]} alt="Lifestyle View" fill className="object-cover" />
+                     <Image src={product.images[4]} alt="Lifestyle View" fill className="object-cover" unoptimized />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white font-bebas text-xl">+2</div>
                   </button>
               </div>
@@ -136,7 +242,6 @@ export default function ProductDetailPage() {
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="inline-block px-2 py-1 bg-black text-white text-xs font-mono uppercase tracking-widest transform -rotate-1">{product.subtitle}</span>
-                  <span className="text-secondary font-marker text-sm">Design by {product.designer}</span>
                 </div>
                 <h1 className="text-5xl sm:text-7xl font-anton uppercase text-black tracking-tight leading-[0.85] mb-4">
                   The Ghost <br/>Ride <span className="text-primary grunge-text">Pro</span>
@@ -159,7 +264,12 @@ export default function ProductDetailPage() {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bebas text-2xl tracking-wide text-gray-900">Select Size</h3>
-                    <a href="#" className="text-xs font-bold font-mono underline hover:text-primary">Size Guide?</a>
+                    <button
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="text-xs font-bold font-mono underline hover:text-primary transition-colors cursor-pointer"
+                    >
+                      Size Guide?
+                    </button>
                   </div>
                   <div className="grid grid-cols-4 gap-3">
                     {["7.75\"", "8.0\"", "8.25\"", "8.5\""].map(size => (
@@ -234,37 +344,143 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Specs Section */}
+          {/* ══════════ Tabbed Specs / Artist Bio / Video Review Section ══════════ */}
           <div className="mt-24 max-w-4xl mx-auto">
              <div className="border-b-4 border-black mb-8 flex space-x-8 overflow-x-auto">
-                <button className="pb-2 text-2xl font-anton uppercase border-b-4 border-primary -mb-1 text-black">The Specs</button>
-                <button className="pb-2 text-2xl font-anton uppercase text-gray-400 hover:text-black transition-colors">Artist Bio</button>
-                <button className="pb-2 text-2xl font-anton uppercase text-gray-400 hover:text-black transition-colors">Video Review</button>
+                <button
+                  onClick={() => setActiveTab("specs")}
+                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
+                    activeTab === "specs" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  }`}
+                >
+                  The Specs
+                </button>
+                <button
+                  onClick={() => setActiveTab("artist")}
+                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
+                    activeTab === "artist" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  }`}
+                >
+                  Artist Bio
+                </button>
+                <button
+                  onClick={() => setActiveTab("video")}
+                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
+                    activeTab === "video" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  }`}
+                >
+                  Video Review
+                </button>
             </div>
-            <div className="bg-white rough-border p-8 relative">
-               <div className="absolute -left-4 -top-4 w-12 h-12 bg-black rounded-full flex items-center justify-center text-white z-20">
-                  <span className="material-icons">bolt</span>
-               </div>
-               <div className="grid md:grid-cols-2 gap-8">
-                  <ul className="space-y-4 font-mono text-sm">
-                    {product.specs.map((spec, idx) => (
-                      <li key={idx} className="flex justify-between border-b border-dashed border-gray-300 pb-2">
-                        <span className="font-bold">{spec.label}:</span>
-                        <span>{spec.value}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="relative">
-                    <h4 className="font-marker text-xl mb-4 transform -rotate-2 text-primary">Why this shape?</h4>
-                    <p className="font-sans text-gray-600 leading-relaxed">{product.shapeDesc}</p>
-                    <div className="mt-4 flex gap-2">
-                      {product.tags.map(tag => (
-                        <span key={tag} className="px-2 py-1 bg-gray-200 text-xs font-bold font-mono rounded">{tag}</span>
-                      ))}
+
+            {/* ── Tab: Specs ── */}
+            {activeTab === "specs" && (
+              <div className="bg-white rough-border p-8 relative">
+                 <div className="absolute -left-4 -top-4 w-12 h-12 bg-black rounded-full flex items-center justify-center text-white z-20">
+                   <span className="material-icons">bolt</span>
+                 </div>
+                 <div className="grid md:grid-cols-2 gap-8">
+                   <ul className="space-y-4 font-mono text-sm">
+                     {product.specs.map((spec, idx) => (
+                       <li key={idx} className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                         <span className="font-bold">{spec.label}:</span>
+                         <span>{spec.value}</span>
+                       </li>
+                     ))}
+                   </ul>
+                   <div className="relative">
+                     <h4 className="font-marker text-xl mb-4 transform -rotate-2 text-primary">Why this shape?</h4>
+                     <p className="font-sans text-gray-600 leading-relaxed">{product.shapeDesc}</p>
+                     <div className="mt-4 flex gap-2">
+                       {product.tags.map(tag => (
+                         <span key={tag} className="px-2 py-1 bg-gray-200 text-xs font-bold font-mono rounded">{tag}</span>
+                       ))}
+                     </div>
+                   </div>
+                 </div>
+              </div>
+            )}
+
+            {/* ── Tab: Artist Bio ── */}
+            {activeTab === "artist" && (
+              <div className="bg-white rough-border p-8 relative">
+                <div className="absolute -left-4 -top-4 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white z-20">
+                  <span className="material-icons">brush</span>
+                </div>
+                <div className="grid md:grid-cols-[180px_1fr] gap-8">
+                  {/* Artist Avatar */}
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-36 h-36 relative rounded-full overflow-hidden rough-border-sm bg-gray-100">
+                      <Image
+                        src={product.artistBio.avatar}
+                        alt={product.artistBio.realName}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <span className="font-marker text-primary text-lg">{product.artistBio.name}</span>
+                  </div>
+
+                  {/* Bio Content */}
+                  <div>
+                    <h3 className="font-anton text-3xl uppercase mb-1">{product.artistBio.realName}</h3>
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                        🎨 {product.artistBio.style}
+                      </span>
+                      <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                        📍 {product.artistBio.location}
+                      </span>
+                    </div>
+                    <p className="font-sans text-gray-600 leading-relaxed mb-6">{product.artistBio.bio}</p>
+                    <div className="flex gap-4 border-t border-dashed border-gray-300 pt-4">
+                      <a
+                        href={`https://instagram.com/${product.artistBio.socials.instagram.replace("@", "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 font-mono text-sm font-bold hover:text-primary transition-colors group"
+                      >
+                        <span className="material-icons text-lg group-hover:scale-110 transition-transform">camera_alt</span>
+                        {product.artistBio.socials.instagram}
+                      </a>
+                      <a
+                        href={`https://${product.artistBio.socials.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 font-mono text-sm font-bold hover:text-primary transition-colors group"
+                      >
+                        <span className="material-icons text-lg group-hover:scale-110 transition-transform">language</span>
+                        {product.artistBio.socials.website}
+                      </a>
                     </div>
                   </div>
-               </div>
-            </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Tab: Video Review ── */}
+            {activeTab === "video" && (
+              <div className="bg-white rough-border p-8 relative">
+                <div className="absolute -left-4 -top-4 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white z-20">
+                  <span className="material-icons">play_arrow</span>
+                </div>
+                <h3 className="font-anton text-2xl uppercase mb-4">Board Review — The Ghost Ride Pro</h3>
+                <p className="font-mono text-sm text-gray-500 mb-6">Watch our team rider break down the Ghost Ride Pro — from first impressions to kickflip tests.</p>
+                <div className="relative w-full aspect-video rough-border-sm overflow-hidden bg-black">
+                  <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Ghost Ride Pro Board Review"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <p className="mt-4 font-mono text-xs text-gray-400 text-center">
+                  Video by Suburbia Skate Media · Published Jan 2026
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Related Products: Fresh Cuts */}
@@ -280,7 +496,7 @@ export default function ProductDetailPage() {
                        <div className="absolute -top-2 -left-2 bg-brand-pink text-black font-bold font-mono text-xs px-2 py-1 z-20 border border-black transform -rotate-6">{prod.badge}</div>
                     )}
                     <div className="aspect-[2/3] bg-gray-100 rough-border-sm mb-4 overflow-hidden relative">
-                       <Image src={prod.image} alt={prod.name} fill className="object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                       <Image src={prod.image} alt={prod.name} fill className="object-cover transform group-hover:scale-110 transition-transform duration-500" unoptimized />
                        <button className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-brutal flex items-center justify-center">
                           <span className="material-icons">add</span>
                        </button>
