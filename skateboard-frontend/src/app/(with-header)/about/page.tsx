@@ -45,7 +45,7 @@ export default function AboutPage() {
                     <div className="bg-white p-3 pb-12 shadow-sketch-lg border-2 border-gray-200 rotate-1">
                         <div className="w-full h-[400px] relative overflow-hidden bg-gray-200">
                             <Image 
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLoOcUKBnDo5y6ejKxI99Vi54vf3VY8wJS6Iyi9eogVdaspJVFMMaUdPTsQ0ViCwC_EoEFMOVes3QyortSCb8LSeZW7PDTrb2Khiu8ZDx-xlh740SczweCep5fu9vNAlQaH0P_e4nJT5YNGMYjplK3OIGnTr7ySizQWzzeJO7dxd46FlOQxKy_miva2jvoPiNFYmSfDWFwbbTBPvYSbXG0XNn63dzaSrh_eXxQcAs5Q1mVMxnH7zSg69lbBaB-LMbSK96cXmg5bN8" 
+                                src="/images/about/hero-skater.jpg" 
                                 alt="Skater doing a trick"
                                 fill
                                 className="object-cover filter grayscale contrast-125 hover:filter-none transition-all duration-500"
@@ -93,7 +93,7 @@ export default function AboutPage() {
                     <div className="bg-white p-4 pb-16 shadow-xl transform rotate-3 w-full max-w-sm border border-gray-200">
                         <div className="bg-black w-full h-64 overflow-hidden relative group">
                             <Image 
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvaLdP9BuxHEquKjZefq-UAFoG9g03QWD2fmVPG35BGtuPjWZ3ru7YieBdMhx-9AYasfzWDdFAjxiX7qmiwXZpMM5kdpihhiRJF1J8fwkta95HIxmLpXuC83X2-ttIFY6g4nLkIum5tw5awirOiHr9r7RLKZk4Ucggv0WcgCjwrNoH47cwyVt_Cm7sj3XegkQ9PZUSeieZlloqqUMzeGPKQ0N3CZ76TtySc1AbH3EH-WB7QVBa_s52_orMVHuoGB1cLnywiv5tGJo"
+                                src="/images/about/workshop.jpg"
                                 alt="Skateboard workshop"
                                 fill
                                 className="object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
@@ -164,10 +164,10 @@ export default function AboutPage() {
              </p>
              <div className="grid md:grid-cols-4 gap-8">
                 {[
-                    { name: 'Sophie', role: 'Creative Director', quote: 'Make it loud.', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqQBmdJCVSkmV3McT46lR77FKBQw-RM_TWq8hib36RhF8HbHjBs402e4TOetibWm7N37BUZv_eZt1sswQgFNI2-uY0oLVPNFWrDHosgynwzew_KT0-QP4ChNSHDTM26wlq6yJjOGWrOkjKRc75GsRue-Izu2V-cWGvChF910txQLSlST2K6UbqoHxPlAROw5OFgIWDnSWV3j72sTVL3CrPM5BdoBX0zkJ-wmBsNs0ZrDTOsgZeNXHKiYcVuhdy95206I3ABG2b2xE', badge: 'FOUNDER' },
-                    { name: 'Dylan', role: 'Tech Lead', quote: 'Code & Concrete.', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBwMoWiuM0hax6drTiKyr09UP7aGs1sr-NeFR05rH5k7gKOdbe1gZcVeQ4R1hF-rvFXk3yvZgRa6FgdYkH0dI-r-P8yYFo1KZZzacXGesv-TJNCuH0zDV_v01flF1N7XX9qUv0Mcoxjl3BNsDQhJ3_BmAkfLtHE1xxq-12vM-31dRpnaaqJXSw68-IB4rOxCuUphDf9XdvWcADIGtQpYWS4X_ZvgL2dCJbRVK-ycPZb8NGtTlUbSxJpRGGMeO75fyjYgdK8GftRs2I' },
-                    { name: 'Carter', role: 'Pro Rider', quote: 'Always rolling.', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCIrQLLl8MMbP7QQxucqseyDuQ8RWW4uBUDTgcgTmgn8LCpu-EcA_n07dKWDuAtOGN3XzdSa4uK5S-JQoqKxw9EOExa5AcoVub65O8lLyyqwbQRhNbzQAA2n7vTZtNRwGgf9F_X1sumw3jKYACQ9fsZx_8dN6tBr-Dv8i4BTPbTPxZjtKFTglWxMqhlhp9n3ZzICazoAqEtIQ0wyXcUjn6Oo2BEY-bDdMBhKsqw0V9CM251EQrG-hMAcRhBpq_1mgYaqvecvNrn41c' },
-                    { name: 'Jordan', role: 'Operations', quote: 'Keeping it real.', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGJMa-RnXyWWE7RVET7pvNJANGvwKwo1K2nB2vYyinlHDt3NiITm9g7_afpv8hC4QfFmSvaMkdLcIBPwQBmzKQ4lKsmV0A18jBxWP95M9eS5F7lJc0ueAApCAnGkVdU6fZ5lKN8-AkNsPhwDdKJTrpdrgM1_8BnJ0RdNA6n-zQhTOC5lGa02aVb4s3G7LCZTAgHoe4nXkLE6qtzeD5khgtbszOw8HNsIQHTMd98-xnQ-I5D-GoYXHs30dh6Q52buG-1RLxeM3BMpM' }
+                    { name: 'Sophie', role: 'Creative Director', quote: 'Make it loud.', img: '/images/about/team-sophie.jpg', badge: 'FOUNDER' },
+                    { name: 'Dylan', role: 'Tech Lead', quote: 'Code & Concrete.', img: '/images/about/team-dylan.jpg' },
+                    { name: 'Carter', role: 'Pro Rider', quote: 'Always rolling.', img: '/images/about/team-carter.jpg' },
+                    { name: 'Jordan', role: 'Operations', quote: 'Keeping it real.', img: '/images/about/team-jordan.jpg' }
                 ].map((member, i) => (
                     <div key={member.name} className={`flex flex-col items-center ${i % 2 !== 0 ? 'md:mt-12 mt-0' : ''}`}>
                         <div className="relative w-48 h-48 mb-6 group">
@@ -199,7 +199,7 @@ export default function AboutPage() {
       <section className="py-32 bg-paper-dark relative overflow-hidden text-center px-6">
          <div className="absolute inset-0 bg-black/80 z-0">
             <Image 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNRaGSbhW9poh8Gj0sDlZJG2NgrVdvZ_Zx6dD4rUEq35VHZqEDfYgL8GirkUjffGgTu7FdlXY3IgkSga_Iz_lKznlheFY_WnMnqMtcqBsL81s9sZ0ejjKUUidKvA-DIlDzP5pxN9Zrw3B4TEVIUW4e-4Lztjk1dgX_mdQLmy04-mBxdGD5tBPHi74WVxSUOJ6nGVXw0ilFG3EEf--1tXoFz0KpjCmX8UJQ43egfesW9PPFcrSeFWSsj7oZywbw05CMT_qeqd81fzs"
+                src="/images/about/cta-background.jpg"
                 alt="Concrete texture"
                 fill
                 className="object-cover opacity-20"
