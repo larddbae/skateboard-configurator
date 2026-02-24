@@ -373,7 +373,7 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="bg-background-light min-h-screen">
+    <div className="bg-texture bg-background-light min-h-screen">
       <main className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 relative">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b-4 border-background-dark border-dashed gap-4 relative">

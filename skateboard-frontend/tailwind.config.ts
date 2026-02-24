@@ -71,6 +71,7 @@ export default {
         "team-purple": "#a855f7",
         "team-yellow": "#facc15",
         "tape-orange": "#ff7e47",
+        "brand-navy": "#2E3192",
 
         // Build page colors
         accent: "#ff6b00",
