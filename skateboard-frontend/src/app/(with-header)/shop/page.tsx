@@ -384,7 +384,8 @@ export default function ShopPage() {
               <span className="material-icons text-3xl">filter_list</span>
             </div>
             <div>
-              <h1 className="font-display text-5xl sm:text-6xl text-background-dark uppercase leading-[0.8] tracking-tighter transform -rotate-1">
+              <h1 className="font-display text-5xl sm:text-6xl text-background-dark uppercase leading-[0.8] tracking-tighter transform -rotate-1"
+                  style={{ textShadow: '3px 3px 0px #ff6b35, -1px -1px 0px #ff6b35, 1px -1px 0px #ff6b35, -1px 1px 0px #ff6b35, 0px 2px 0px #ff6b35, 2px 0px 0px #ff6b35' }}>
                 Shop Decks
               </h1>
               <p className="font-mono text-zinc-600 text-base mt-2 ml-2 transform rotate-1">
@@ -395,11 +396,11 @@ export default function ShopPage() {
 
           <div className="flex items-center gap-4 z-10">
             {/* Sort Dropdown */}
-            <div className="relative bg-white border-2 border-background-dark shadow-sketch">
+            <div className="relative bg-white border-2 border-background-dark shadow-sketch -rotate-1 hover:rotate-0 transition-transform">
               <select 
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="appearance-none bg-transparent text-sm font-bold font-mono pl-4 pr-12 py-3 outline-none cursor-pointer uppercase tracking-wider"
+                className="appearance-none bg-transparent text-sm font-bold font-display pl-4 pr-12 py-3 outline-none cursor-pointer uppercase tracking-wider"
               >
                 <option value="featured">Sort by: Featured</option>
                 <option value="price-low">Price: Low to High</option>
@@ -431,7 +432,7 @@ export default function ShopPage() {
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 flex-shrink-0 space-y-10 font-mono text-lg">
             {/* Category Filter */}
-            <div className="relative">
+            <div className="relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.5deg]">
               <div className="absolute -left-4 top-2 w-full h-4 bg-yellow-200 -z-10 -rotate-1"></div>
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 flex items-center justify-between border-b-2 border-black pb-2">
                 Category
@@ -456,7 +457,7 @@ export default function ShopPage() {
             </div>
 
             {/* Price Filter */}
-            <div>
+            <div className="bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.3deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Price</h3>
               <div className="px-2">
                 <input
@@ -479,7 +480,7 @@ export default function ShopPage() {
             </div>
 
             {/* Brand Filter */}
-            <div className="relative">
+            <div className="relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.3deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Brand</h3>
               <div className="space-y-3 pl-2">
                 {brandOptions.map((brand) => (
@@ -499,7 +500,7 @@ export default function ShopPage() {
             </div>
 
             {/* Size Filter */}
-            <div>
+            <div className="bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.5deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Size</h3>
               <div className="grid grid-cols-3 gap-3">
                 {sizeOptions.map((size) => (
