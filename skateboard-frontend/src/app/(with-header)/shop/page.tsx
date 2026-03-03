@@ -373,8 +373,45 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="bg-texture bg-background-light min-h-screen">
-      <main className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 relative">
+    <div className="bg-texture bg-background-light min-h-screen relative overflow-hidden">
+      {/* ── Decorative Background Texts (styled like SUBURBIA SKATE hero) ── */}
+      <div
+        className="absolute top-[1%] -left-[3%] pointer-events-none select-none z-0"
+        aria-hidden="true"
+      >
+        <span
+          className="font-display text-[11vw] xl:text-[10rem] font-black uppercase leading-none whitespace-nowrap text-brand-purple opacity-20 mix-blend-multiply animate-squiggle block"
+          style={{ transform: 'rotate(-7deg)' }}
+        >
+          Shop Catalog
+        </span>
+      </div>
+
+      <div
+        className="absolute top-[44%] -right-[4%] pointer-events-none select-none z-0"
+        aria-hidden="true"
+      >
+        <span
+          className="font-display text-[13vw] xl:text-[12rem] font-black uppercase leading-none whitespace-nowrap text-brand-purple opacity-20 mix-blend-multiply animate-squiggle block"
+          style={{ transform: 'rotate(4deg)' }}
+        >
+          Collection
+        </span>
+      </div>
+
+      <div
+        className="absolute bottom-[4%] -left-[2%] pointer-events-none select-none z-0"
+        aria-hidden="true"
+      >
+        <span
+          className="font-display text-[12vw] xl:text-[11rem] font-black uppercase leading-none whitespace-nowrap text-brand-purple opacity-20 mix-blend-multiply animate-squiggle block"
+          style={{ transform: 'rotate(-5deg)' }}
+        >
+          Deck Lineup
+        </span>
+      </div>
+
+      <main className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b-4 border-background-dark border-dashed gap-4 relative">
           <div className="absolute -left-2 top-0 w-32 h-8 bg-primary/50 -rotate-3 z-0 pointer-events-none"></div>
