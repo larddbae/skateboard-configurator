@@ -99,6 +99,12 @@ export default function ProductDetailPage() {
       {/* Background Texture Overlay */}
       <div className="fixed inset-0 pointer-events-none opacity-40 mix-blend-multiply z-50 bg-paper-texture"></div>
 
+      {/* Scattered Skate Icon Pattern */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-skate-pattern"></div>
+
+      {/* Warm Spotlight Glow behind product area */}
+      <div className="absolute inset-0 pointer-events-none z-0 bg-product-spotlight"></div>
+
       {/* ══════════ Size Guide Modal ══════════ */}
       {sizeGuideOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

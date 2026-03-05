@@ -527,6 +527,23 @@ input[type="range"]::-moz-range-thumb {
   -webkit-mask-image: url("https://www.transparenttextures.com/patterns/asfalt-light.png");
 }
 
+/* Scattered Skate Icon Pattern — subtle repeating SVG background */
+.bg-skate-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%231a1a1a' opacity='0.035'%3E%3C!-- Deck silhouette --%3E%3Crect x='10' y='15' width='6' height='22' rx='3' transform='rotate(-15 13 26)'/%3E%3C!-- Wheel --%3E%3Ccircle cx='85' cy='25' r='4'/%3E%3Ccircle cx='85' cy='25' r='2' fill='none' stroke='%231a1a1a' stroke-width='0.5'/%3E%3C!-- Small diamond --%3E%3Crect x='50' y='55' width='5' height='5' transform='rotate(45 52.5 57.5)'/%3E%3C!-- Another deck --%3E%3Crect x='75' y='80' width='5' height='18' rx='2.5' transform='rotate(20 77.5 89)'/%3E%3C!-- Bolt/hardware dot cluster --%3E%3Ccircle cx='25' cy='85' r='1.5'/%3E%3Ccircle cx='30' cy='85' r='1.5'/%3E%3Ccircle cx='25' cy='90' r='1.5'/%3E%3Ccircle cx='30' cy='90' r='1.5'/%3E%3C!-- Wheel 2 --%3E%3Ccircle cx='105' cy='60' r='3'/%3E%3C!-- Small X mark --%3E%3Cline x1='48' y1='10' x2='54' y2='16' stroke='%231a1a1a' stroke-width='1.2'/%3E%3Cline x1='54' y1='10' x2='48' y2='16' stroke='%231a1a1a' stroke-width='1.2'/%3E%3C!-- Tiny star --%3E%3Cpolygon points='15,60 16.5,55 18,60 13,57 20,57' /%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  background-repeat: repeat;
+}
+
+/* Radial Spotlight Glow — warm orange emanating from product area */
+.bg-product-spotlight {
+  background: radial-gradient(
+    ellipse 60% 45% at 50% 20%,
+    rgba(255, 107, 53, 0.07) 0%,
+    rgba(233, 213, 230, 0.04) 50%,
+    transparent 100%
+  );
+}
+
 .rough-border {
   border: 2px solid #000;
   border-radius: 2px 255px 3px 25px / 255px 5px 225px 3px;
