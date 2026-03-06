@@ -62,6 +62,7 @@ export default {
         // Zine theme colors
         primary: "#ff6b35", // Zine Orange
         secondary: "#a3e635", // Lime Green
+        tersier: "#9e00f9ff", //Black
         "zine-lavender": "#e9d5e6", // Light Lavender Base
         ink: "#1a1a1a",
         paper: "#fdfbf7",

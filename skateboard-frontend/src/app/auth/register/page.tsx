@@ -1,11 +1,271 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import clsx from "clsx";
+import gsap from "gsap";
 
+/* ============================================================
+   SupahBlob — Adapted from morphing-blob-image template
+   Generates a morphing blob path using polar coordinates
+   ============================================================ */
+class SupahBlob {
+  el: SVGPathElement;
+  points: { x: number; y: number }[];
+  segments: number;
+  centerX: number;
+  centerY: number;
+  minRadius: number;
+  maxRadius: number;
+  minDuration: number;
+  maxDuration: number;
+  maskEl: HTMLElement | null;
+  maskID: string | null;
+  tl: gsap.core.Timeline | null;
+
+  constructor(opts: {
+    el: SVGPathElement;
+    segments?: number;
+    centerX?: number;
+    centerY?: number;
+    minRadius?: number;
+    maxRadius?: number;
+    minDuration?: number;
+    maxDuration?: number;
+    maskEl?: HTMLElement | null;
+    maskID?: string | null;
+  }) {
+    this.el = opts.el;
+    this.segments = opts.segments || 8;
+    this.centerX = opts.centerX || 400;
+    this.centerY = opts.centerY || 400;
+    this.minRadius = opts.minRadius || 300;
+    this.maxRadius = opts.maxRadius || 380;
+    this.minDuration = opts.minDuration || 1;
+    this.maxDuration = opts.maxDuration || 2;
+    this.maskEl = opts.maskEl || null;
+    this.maskID = opts.maskID || null;
+    this.points = [];
+    this.tl = null;
+    this.init();
+  }
+
+  init() {
+    this.points = [];
+    const slice = (Math.PI * 2) / this.segments;
+    this.tl = gsap.timeline({
+      onUpdate: () => this.update(),
+    });
+
+    for (let i = 0; i < this.segments; i++) {
+      const angle = slice * i;
+      const duration = gsap.utils.random(this.minDuration, this.maxDuration);
+      const p = {
+        x: this.centerX + Math.cos(angle) * this.minRadius,
+        y: this.centerY + Math.sin(angle) * this.minRadius,
+      };
+      const tween = gsap.to(p, {
+        duration,
+        x: this.centerX + Math.cos(angle) * this.maxRadius,
+        y: this.centerY + Math.sin(angle) * this.maxRadius,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+      this.tl.add(tween, -duration);
+      this.points.push(p);
+    }
+  }
+
+  update() {
+    this.el.setAttribute("d", this.createPath());
+    if (this.maskEl && this.maskID) {
+      const s = this.maskEl.style as unknown as Record<string, string>;
+      s.clipPath = "none";
+      s.webkitClipPath = "none";
+      void this.maskEl.offsetWidth;
+      s.clipPath = `url("${this.maskID}")`;
+      s.webkitClipPath = `url("${this.maskID}")`;
+    }
+  }
+
+  createPath() {
+    const data = this.points;
+    const size = data.length;
+    let path = `M${data[0].x} ${data[0].y} C`;
+    for (let i = 0; i < size; i++) {
+      const p0 = data[(i - 1 + size) % size];
+      const p1 = data[i];
+      const p2 = data[(i + 1) % size];
+      const p3 = data[(i + 2) % size];
+      const x1 = p1.x + (p2.x - p0.x) * 0.15;
+      const y1 = p1.y + (p2.y - p0.y) * 0.15;
+      const x2 = p2.x - (p3.x - p1.x) * 0.15;
+      const y2 = p2.y - (p3.y - p1.y) * 0.15;
+      path += ` ${x1} ${y1} ${x2} ${y2} ${p2.x} ${p2.y}`;
+    }
+    return `${path}z`;
+  }
+
+  kill() {
+    this.tl?.kill();
+  }
+}
+
+/* ============================================================
+   ButtonBlob — Smaller blob for button hover effect
+   Uses same SupahBlob approach but driven by hover timeline
+   ============================================================ */
+class ButtonBlob {
+  el: SVGPathElement;
+  points: { x: number; y: number; origX: number; origY: number }[];
+  segments: number;
+  centerX: number;
+  centerY: number;
+  radius: number;
+  morphAmount: number;
+  tl: gsap.core.Timeline;
+
+  constructor(opts: {
+    el: SVGPathElement;
+    segments?: number;
+    centerX?: number;
+    centerY?: number;
+    radius?: number;
+    morphAmount?: number;
+  }) {
+    this.el = opts.el;
+    this.segments = opts.segments || 6;
+    this.centerX = opts.centerX || 250;
+    this.centerY = opts.centerY || 30;
+    this.radius = opts.radius || 250;
+    this.morphAmount = opts.morphAmount || 40;
+    this.points = [];
+    this.tl = gsap.timeline({ paused: true });
+    this.init();
+  }
+
+  init() {
+    const slice = (Math.PI * 2) / this.segments;
+    for (let i = 0; i < this.segments; i++) {
+      const angle = slice * i;
+      const x = this.centerX + Math.cos(angle) * this.radius;
+      const y = this.centerY + Math.sin(angle) * this.radius;
+      this.points.push({ x, y, origX: x, origY: y });
+    }
+    this.updatePath();
+
+    // Build the hover morph timeline
+    for (let i = 0; i < this.points.length; i++) {
+      const angle = (slice * i) + (Math.random() - 0.5) * 0.5;
+      const offsetX = Math.cos(angle) * this.morphAmount * (0.5 + Math.random());
+      const offsetY = Math.sin(angle) * this.morphAmount * (0.5 + Math.random());
+      this.tl.to(
+        this.points[i],
+        {
+          duration: 0.6,
+          x: this.points[i].origX + offsetX,
+          y: this.points[i].origY + offsetY,
+          ease: "back.out(1.7)",
+          onUpdate: () => this.updatePath(),
+        },
+        0
+      );
+    }
+  }
+
+  updatePath() {
+    this.el.setAttribute("d", this.createPath());
+  }
+
+  createPath() {
+    const data = this.points;
+    const size = data.length;
+    if (size === 0) return "";
+    let path = `M${data[0].x} ${data[0].y} C`;
+    for (let i = 0; i < size; i++) {
+      const p0 = data[(i - 1 + size) % size];
+      const p1 = data[i];
+      const p2 = data[(i + 1) % size];
+      const p3 = data[(i + 2) % size];
+      const x1 = p1.x + (p2.x - p0.x) * 0.15;
+      const y1 = p1.y + (p2.y - p0.y) * 0.15;
+      const x2 = p2.x - (p3.x - p1.x) * 0.15;
+      const y2 = p2.y - (p3.y - p1.y) * 0.15;
+      path += ` ${x1} ${y1} ${x2} ${y2} ${p2.x} ${p2.y}`;
+    }
+    return `${path}z`;
+  }
+
+  play() {
+    this.tl.play().timeScale(1);
+  }
+
+  reverse() {
+    this.tl.reverse().timeScale(2.5);
+  }
+
+  kill() {
+    this.tl.kill();
+  }
+}
+
+/* ============================================================
+   Confetti helper — Adapted from party-checkboxes template
+   ============================================================ */
+function spawnConfetti(container: HTMLElement) {
+  const particles = 14;
+  for (let p = 0; p < particles; p++) {
+    const angleInc = 360 / particles;
+    let angle = angleInc * p;
+    if (p % 2 === 1) angle -= angleInc / 2;
+
+    const particle = document.createElement("span");
+    particle.classList.add("confetti-particle");
+
+    const angleInRad = (angle * Math.PI) / 180;
+    const angleSin = Math.sin(angleInRad);
+    const angleCos = Math.cos(angleInRad);
+
+    const start = 0.75;
+    const end = 2.25;
+    const middle = (start + end) / 2;
+
+    const pointA = { x: start * angleSin, y: start * angleCos };
+    const pointB = { x: middle * angleSin, y: middle * angleCos };
+    const pointC = { x: end * angleSin, y: end * angleCos };
+
+    const bgHue = Math.round(angle);
+    particle.style.background = `hsl(${bgHue}, 90%, 50%)`;
+
+    container.appendChild(particle);
+
+    const animation = particle.animate(
+      [
+        { transform: `translate(${pointA.x}em, ${pointA.y}em) scale(0)` },
+        { transform: `translate(${pointB.x}em, ${pointB.y}em) scale(1)` },
+        { transform: `translate(${pointC.x}em, ${pointC.y}em) scale(0)` },
+      ],
+      {
+        duration: 375,
+        easing: "linear",
+        delay: 125,
+      }
+    );
+    animation.onfinish = () => particle.remove();
+  }
+}
+
+function clearConfetti(container: HTMLElement) {
+  const particles = container.querySelectorAll("span.confetti-particle");
+  particles.forEach((p) => p.remove());
+}
+
+/* ============================================================
+   Register Page Component
+   ============================================================ */
 export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading: authLoading } = useAuth();
@@ -18,6 +278,18 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // Refs for animations 
+  const blobMaskPathRef = useRef<SVGPathElement>(null);
+  const blobBgPathRef = useRef<SVGPathElement>(null);
+  const blobImagesRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnBlobPathRef = useRef<SVGPathElement>(null);
+  const checkboxWrapperRef = useRef<HTMLDivElement>(null);
+  const blob1Ref = useRef<SupahBlob | null>(null);
+  const blob2Ref = useRef<SupahBlob | null>(null);
+  const btnBlobRef = useRef<ButtonBlob | null>(null);
+  const btnCirclesTlRef = useRef<gsap.core.Timeline | null>(null);
 
   // Toggle Password
   const togglePassword = () => setShowPassword(!showPassword);
@@ -50,6 +322,106 @@ export default function RegisterPage() {
 
   const isLoading = isSubmitting || authLoading;
 
+  /* ------ GSAP Init: Morphing Blob Image ------ */
+  useEffect(() => {
+    if (!blobMaskPathRef.current || !blobBgPathRef.current) return;
+
+    blob1Ref.current = new SupahBlob({
+      el: blobMaskPathRef.current,
+      segments: 9,
+      centerX: 400,
+      centerY: 400,
+      minRadius: 280,
+      maxRadius: 360,
+      minDuration: 1,
+      maxDuration: 3,
+      maskEl: blobImagesRef.current,
+      maskID: "#registerBlobMask",
+    });
+
+    blob2Ref.current = new SupahBlob({
+      el: blobBgPathRef.current,
+      segments: 9,
+      centerX: 400,
+      centerY: 400,
+      minRadius: 300,
+      maxRadius: 380,
+      minDuration: 2,
+      maxDuration: 3,
+    });
+
+    return () => {
+      blob1Ref.current?.kill();
+      blob2Ref.current?.kill();
+    };
+  }, []);
+
+  /* ------ GSAP Init: Button Hover Blob ------ */
+  useEffect(() => {
+    if (!btnBlobPathRef.current || !btnRef.current) return;
+
+    btnBlobRef.current = new ButtonBlob({
+      el: btnBlobPathRef.current,
+      segments: 6,
+      centerX: 250,
+      centerY: 30,
+      radius: 260,
+      morphAmount: 35,
+    });
+
+    // Circles stagger timeline
+    const circleEls = btnRef.current.querySelectorAll(".btn-blob-circle");
+    const circlesTl = gsap.timeline({ paused: true });
+    circlesTl.fromTo(
+      circleEls,
+      { scale: 0, opacity: 0 },
+      {
+        scale: 1,
+        opacity: 0.6,
+        duration: 0.4,
+        ease: "back.out(1.7)",
+        stagger: 0.06,
+      }
+    );
+    btnCirclesTlRef.current = circlesTl;
+
+    const handleMouseEnter = () => {
+      btnBlobRef.current?.play();
+      btnCirclesTlRef.current?.play().timeScale(1);
+    };
+    const handleMouseLeave = () => {
+      btnBlobRef.current?.reverse();
+      btnCirclesTlRef.current?.reverse().timeScale(2.5);
+    };
+
+    const btn = btnRef.current;
+    btn.addEventListener("mouseenter", handleMouseEnter);
+    btn.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      btn.removeEventListener("mouseenter", handleMouseEnter);
+      btn.removeEventListener("mouseleave", handleMouseLeave);
+      btnBlobRef.current?.kill();
+      btnCirclesTlRef.current?.kill();
+    };
+  }, []);
+
+  /* ------ Checkbox Confetti Handler ------ */
+  const handleCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAgreedToTerms(e.target.checked);
+      const wrapper = checkboxWrapperRef.current;
+      if (!wrapper) return;
+
+      if (e.target.checked) {
+        spawnConfetti(wrapper);
+      } else {
+        clearConfetti(wrapper);
+      }
+    },
+    []
+  );
+
   return (
     <div className="flex min-h-screen bg-paper-cream relative overflow-hidden font-space-mono text-marker-black selection:bg-tape-orange selection:text-white">
       {/* Background Noise */}
@@ -63,29 +435,36 @@ export default function RegisterPage() {
       {/* Main Content Container */}
       <main className="w-full max-w-6xl relative z-10 flex flex-col md:flex-row items-center justify-center p-4 md:p-12 gap-8 md:gap-20 mx-auto">
         
-        {/* Left Side: Image Collage (Hidden on mobile) */}
-        <div className="w-full md:w-[45%] relative group hidden md:block">
-            <div className="relative transform rotate-3 transition-transform duration-500 hover:rotate-0">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-brand-lime rounded-full mix-blend-multiply filter blur-xl opacity-60"></div>
-                <div className="absolute top-20 -right-10 w-40 h-40 bg-brand-orange rounded-full mix-blend-multiply filter blur-xl opacity-60"></div>
-                
-                <div className="relative bg-white p-4 pb-16 shadow-polaroid border border-gray-200">
-                    <div className="absolute -top-4 right-1/2 translate-x-1/2 w-32 h-8 bg-purple-200/80 shadow-tape transform -rotate-1 z-20 backdrop-blur-sm"></div>
-                    <div className="relative overflow-hidden aspect-[4/5] border-2 border-zinc-100 bg-zinc-100">
-                        <img 
-                            alt="Skate crew hanging out" 
-                            className="w-full h-full object-cover grayscale contrast-125 mix-blend-multiply opacity-90 group-hover:grayscale-0 transition-all duration-700" 
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwMoWiuM0hax6drTiKyr09UP7aGs1sr-NeFR05rH5k7gKOdbe1gZcVeQ4R1hF-rvFXk3yvZgRa6FgdYkH0dI-r-P8yYFo1KZZzacXGesv-TJNCuH0zDV_v01flF1N7XX9qUv0Mcoxjl3BNsDQhJ3_BmAkfLtHE1xxq-12vM-31dRpnaaqJXSw68-IB4rOxCuUphDf9XdvWcADIGtQpYWS4X_ZvgL2dCJbRVK-ycPZb8NGtTlUbSxJpRGGMeO75fyjYgdK8GftRs2I"
-                        />
-                         <div className="absolute inset-0 bg-brand-orange opacity-10 mix-blend-overlay"></div>
-                    </div>
-                    <div className="absolute bottom-4 left-0 right-0 text-center">
-                        <p className="font-marker text-2xl text-black rotate-1">
-                            Join The Crew
-                        </p>
-                    </div>
-                </div>
+        {/* Left Side: Morphing Blob Image */}
+        <div className="w-full md:w-[45%] relative group hidden md:flex flex-col items-center">
+          <div className="register-blob-container" style={{ maxWidth: "500px" }}>
+            {/* SVG Blob */}
+            <svg viewBox="0 0 800 800" aria-hidden="true">
+              <defs>
+                <clipPath id="registerBlobMask">
+                  <path ref={blobMaskPathRef} />
+                </clipPath>
+              </defs>
+              <path ref={blobBgPathRef} className="blob-bg-path" />
+            </svg>
+
+            {/* Image clipped by blob */}
+            <div ref={blobImagesRef} className="register-blob-images">
+              <img
+                alt="Skate crew hanging out"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwMoWiuM0hax6drTiKyr09UP7aGs1sr-NeFR05rH5k7gKOdbe1gZcVeQ4R1hF-rvFXk3yvZgRa6FgdYkH0dI-r-P8yYFo1KZZzacXGesv-TJNCuH0zDV_v01flF1N7XX9qUv0Mcoxjl3BNsDQhJ3_BmAkfLtHE1xxq-12vM-31dRpnaaqJXSw68-IB4rOxCuUphDf9XdvWcADIGtQpYWS4X_ZvgL2dCJbRVK-ycPZb8NGtTlUbSxJpRGGMeO75fyjYgdK8GftRs2I"
+              />
             </div>
+
+            {/* Decorative blurred circles behind blob */}
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-brand-lime rounded-full mix-blend-multiply filter blur-xl opacity-60 pointer-events-none"></div>
+            <div className="absolute top-20 -right-10 w-40 h-40 bg-brand-orange rounded-full mix-blend-multiply filter blur-xl opacity-60 pointer-events-none"></div>
+          </div>
+
+          {/* Label below blob */}
+          <p className="font-marker text-2xl text-black mt-4 rotate-1 select-none">
+            Join The Crew
+          </p>
         </div>
 
         {/* Right Side: Register Form */}
@@ -96,7 +475,7 @@ export default function RegisterPage() {
 
                 <div className="mb-6 relative z-10">
                     <h2 className="font-rubik-mono text-3xl md:text-4xl text-black mb-2 uppercase tracking-tighter">
-                        NEW <span className="text-secondary bg-brand-lime px-2 transform -skew-x-6 inline-block">BLOOD</span>
+                        NEW <span className="text-tersier bg-brand-pink px-2 transform -skew-x-6 inline-block">BLOOD</span>
                     </h2>
                     <p className="font-marker text-gray-500 text-lg -rotate-1 ml-1">start your legacy.</p>
                 </div>
@@ -183,29 +562,43 @@ export default function RegisterPage() {
                         </button>
                     </div>
 
-                    {/* Terms */}
-                    <div className="flex items-start gap-3 pl-1">
+                    {/* Terms — Party Checkbox */}
+                    <div ref={checkboxWrapperRef} className="register-checkbox-wrapper">
                         <input 
-                            className="mt-1 h-4 w-4 cursor-pointer appearance-none border-2 border-black bg-white checked:bg-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" 
                             id="terms" 
                             type="checkbox"
                             checked={agreedToTerms}
-                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                            onChange={handleCheckboxChange}
                         />
                          <label className="text-xs font-bold text-zinc-600 font-mono select-none cursor-pointer leading-tight" htmlFor="terms">
                             I agree to the <Link href="#" className="text-brand-orange hover:text-black underline">Terms</Link> and <Link href="#" className="text-brand-orange hover:text-black underline">Privacy Policy</Link>. No poseurs allowed.
                         </label>
                     </div>
 
+                    {/* JOIN NOW Button with Blob Hover */}
                     <button 
+                        ref={btnRef}
                         type="submit" 
                         disabled={isLoading}
-                        className="w-full bg-black hover:bg-zinc-800 text-white font-rubik-mono text-xl py-4 border-2 border-transparent hover:border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all mt-4 uppercase tracking-wider relative overflow-hidden group"
+                        className="register-btn w-full bg-black hover:bg-zinc-800 text-white font-rubik-mono text-xl py-4 border-2 border-transparent hover:border-black shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all mt-4 uppercase tracking-wider"
                     >
+                        {/* SVG Blob overlay */}
+                        <svg viewBox="0 0 500 60" preserveAspectRatio="none" aria-hidden="true">
+                          <path ref={btnBlobPathRef} className="btn-blob-path" />
+                          <circle className="btn-blob-circle" cx="60" cy="10" r="6" />
+                          <circle className="btn-blob-circle" cx="440" cy="10" r="5" />
+                          <circle className="btn-blob-circle" cx="80" cy="50" r="4" />
+                          <circle className="btn-blob-circle" cx="420" cy="50" r="7" />
+                          <circle className="btn-blob-circle" cx="250" cy="5" r="5" />
+                          <circle className="btn-blob-circle" cx="150" cy="55" r="4" />
+                          <circle className="btn-blob-circle" cx="350" cy="55" r="6" />
+                          <circle className="btn-blob-circle" cx="30" cy="30" r="5" />
+                          <circle className="btn-blob-circle" cx="470" cy="30" r="4" />
+                        </svg>
+
                         <span className="relative z-10 flex items-center justify-center gap-3">
                             {isLoading ? "CREATING..." : "JOIN NOW"} <span className="material-icons text-brand-lime">east</span>
                         </span>
-                        <div className="absolute inset-0 bg-brand-lime opacity-0 group-hover:opacity-10 transition-opacity"></div>
                     </button>
                 </form>
 
