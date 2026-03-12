@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AIController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PartController;
@@ -27,6 +28,10 @@ Route::post('/ai/quiz', [AIController::class, 'styleQuiz']);
 // Auth
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+
+// Social Auth
+Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirect']);
+Route::get('/auth/google/callback', [SocialAuthController::class, 'callback']);
 
 /*
 |--------------------------------------------------------------------------

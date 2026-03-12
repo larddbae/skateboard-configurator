@@ -230,6 +230,14 @@ export default function RegisterPage() {
     }
   };
 
+  const handleSocialLogin = (provider: string) => {
+    if (provider === 'Google') {
+        window.location.href = 'http://127.0.0.1:8000/api/auth/google/redirect';
+    } else {
+        alert(`${provider} login coming soon!`);
+    }
+  };
+
   const isLoading = isSubmitting || authLoading;
 
   /* ------ GSAP Init: Morphing Blob Image ------ */
@@ -726,13 +734,18 @@ export default function RegisterPage() {
                         <div className="w-full border-t-2 border-dashed border-gray-300"></div>
                     </div>
                     <div className="relative bg-white px-4">
-                        <span className="font-marker text-zinc-400 text-sm">or login via</span>
+                        <span className="font-marker text-zinc-400 text-sm">or register via</span>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 gsap-form-bottom">
                      {['Google', 'Facebook'].map((provider) => (
-                        <button key={provider} className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2">
+                        <button 
+                            key={provider} 
+                            type="button"
+                            onClick={() => handleSocialLogin(provider)}
+                            className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2"
+                        >
                              <span>{provider}</span>
                         </button>
                      ))}

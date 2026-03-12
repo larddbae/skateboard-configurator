@@ -355,6 +355,14 @@ export default function LoginPage() {
     }
   };
 
+  const handleSocialLogin = (provider: string) => {
+    if (provider === 'Google') {
+        window.location.href = 'http://127.0.0.1:8000/api/auth/google/redirect';
+    } else {
+        alert(`${provider} login coming soon!`);
+    }
+  };
+
   const isLoading = isSubmitting || authLoading;
 
   return (
@@ -509,7 +517,12 @@ export default function LoginPage() {
                         { name: 'Google', icon: '/images/login/google.png' },
                         { name: 'Facebook', icon: '/images/login/facebook.png' }
                      ].map((provider) => (
-                        <button key={provider.name} type="button" className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2">
+                        <button 
+                            key={provider.name} 
+                            type="button" 
+                            onClick={() => handleSocialLogin(provider.name)}
+                            className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2"
+                        >
                              <Image src={provider.icon} alt={`${provider.name} logo`} width={20} height={20} className="w-5 h-5 object-contain" />
                              <span>{provider.name}</span>
                         </button>
