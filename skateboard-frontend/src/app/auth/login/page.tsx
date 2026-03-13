@@ -358,6 +358,8 @@ export default function LoginPage() {
   const handleSocialLogin = (provider: string) => {
     if (provider === 'Google') {
         window.location.href = 'http://127.0.0.1:8000/api/auth/google/redirect';
+    } else if (provider === 'Facebook') {
+        window.location.href = 'http://localhost:8000/api/auth/facebook/redirect';
     } else {
         alert(`${provider} login coming soon!`);
     }

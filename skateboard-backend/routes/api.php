@@ -33,6 +33,9 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [SocialAuthController::class, 'callback']);
 
+Route::get('/auth/facebook/redirect', [SocialAuthController::class, 'redirectFacebook']);
+Route::get('/auth/facebook/callback', [SocialAuthController::class, 'callbackFacebook']);
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Require Authentication)

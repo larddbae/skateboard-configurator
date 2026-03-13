@@ -233,6 +233,8 @@ export default function RegisterPage() {
   const handleSocialLogin = (provider: string) => {
     if (provider === 'Google') {
         window.location.href = 'http://127.0.0.1:8000/api/auth/google/redirect';
+    } else if (provider === 'Facebook') {
+        window.location.href = 'http://localhost:8000/api/auth/facebook/redirect';
     } else {
         alert(`${provider} login coming soon!`);
     }
@@ -746,6 +748,11 @@ export default function RegisterPage() {
                             onClick={() => handleSocialLogin(provider)}
                             className="flex items-center justify-center px-4 py-2 border-2 border-black bg-white hover:bg-gray-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-y-[2px] active:shadow-none text-black font-bold font-mono text-sm gap-2"
                         >
+                             <img 
+                                 src={`/images/register/${provider.toLowerCase()}.png`} 
+                                 alt={`${provider} icon`} 
+                                 className="w-5 h-5 object-contain"
+                             />
                              <span>{provider}</span>
                         </button>
                      ))}
