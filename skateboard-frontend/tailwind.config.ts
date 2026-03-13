@@ -25,8 +25,8 @@ export default {
     fontSize,
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
-        mono: ["var(--font-roboto)", "monospace"],
+        sans: ["var(--font-bowlby-sc)", "sans-serif"],
+        mono: ["var(--font-dm-mono)", "monospace"],
         display: ["var(--font-bowlby-sc)", "cursive"],
         hand: ["var(--font-gloria)", "cursive"],
         "dm-mono": ["var(--font-dm-mono)", "monospace"],
@@ -49,6 +49,7 @@ export default {
         "brand-pink": "#f7d0e9",
         "brand-purple": "#7c3aed",
         "brand-lime": "#d9f154",
+        "brand-gray": "#fffdf9",
         // Cart Zine Colors
         "suburbia-blue": "#2e3192",
         "suburbia-purple": "#8b5cf6",
