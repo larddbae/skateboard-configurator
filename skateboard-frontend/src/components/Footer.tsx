@@ -143,7 +143,7 @@ export function Footer() {
             © 2024 SUBURBIA SKATE. ALL RIGHTS RESERVED.
           </div>
           <div className="flex space-x-6 text-xs font-mono text-gray-500 uppercase">
-            <Link href="/privacy" className="hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">
               Privacy
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
