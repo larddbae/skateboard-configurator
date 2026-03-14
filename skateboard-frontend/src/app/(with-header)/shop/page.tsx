@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 // ─── Mock Product Data (25 products) ────────────────────────────────────────
 // To add your own images:
@@ -251,11 +255,17 @@ function Pagination({
 // ─── Main Shop Page ─────────────────────────────────────────────────────────
 
 export default function ShopPage() {
-  // Filter states
+  // ── Active filter states (applied to product grid) ─────────────────────
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(150);
+
+  // ── Pending filter states (staged, waiting for "Apply") ────────────────
+  const [pendingCategories, setPendingCategories] = useState<string[]>([]);
+  const [pendingBrands, setPendingBrands] = useState<string[]>([]);
+  const [pendingSizes, setPendingSizes] = useState<string[]>([]);
+  const [pendingPriceRange, setPendingPriceRange] = useState(150);
 
   // Sort & view states
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -264,28 +274,64 @@ export default function ShopPage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ── Toggle helpers ──────────────────────────────────────────────────────
+  // ── GSAP container ref ─────────────────────────────────────────────────
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // ── Check if pending filters differ from active ────────────────────────
+  const hasPendingChanges = useMemo(() => {
+    return (
+      JSON.stringify(pendingCategories) !== JSON.stringify(selectedCategories) ||
+      JSON.stringify(pendingBrands) !== JSON.stringify(selectedBrands) ||
+      JSON.stringify(pendingSizes) !== JSON.stringify(selectedSizes) ||
+      pendingPriceRange !== priceRange
+    );
+  }, [pendingCategories, pendingBrands, pendingSizes, pendingPriceRange, selectedCategories, selectedBrands, selectedSizes, priceRange]);
+
+  // ── Toggle helpers (mutate PENDING states) ──────────────────────────────
 
   const toggleCategory = (cat: string) => {
-    setSelectedCategories((prev) =>
+    setPendingCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
-    setCurrentPage(1);
   };
 
   const toggleBrand = (brand: string) => {
-    setSelectedBrands((prev) =>
+    setPendingBrands((prev) =>
       prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
-    setCurrentPage(1);
   };
 
   const toggleSize = (size: string) => {
-    setSelectedSizes((prev) =>
+    setPendingSizes((prev) =>
       prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
     );
-    setCurrentPage(1);
   };
+
+  const handlePendingPriceChange = (value: number) => {
+    setPendingPriceRange(value);
+  };
+
+  // ── Apply Filters: copy pending → active ───────────────────────────────
+  const applyFilters = useCallback(() => {
+    setSelectedCategories([...pendingCategories]);
+    setSelectedBrands([...pendingBrands]);
+    setSelectedSizes([...pendingSizes]);
+    setPriceRange(pendingPriceRange);
+    setCurrentPage(1);
+  }, [pendingCategories, pendingBrands, pendingSizes, pendingPriceRange]);
+
+  // ── Reset Filters: clear both pending + active ─────────────────────────
+  const resetFilters = useCallback(() => {
+    setPendingCategories([]);
+    setPendingBrands([]);
+    setPendingSizes([]);
+    setPendingPriceRange(150);
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedSizes([]);
+    setPriceRange(150);
+    setCurrentPage(1);
+  }, []);
 
   // ── Filter + Sort + Paginate pipeline ───────────────────────────────────
 
@@ -366,14 +412,54 @@ export default function ShopPage() {
     setCurrentPage(1);
   };
 
-  // Price change handler (resets page)
-  const handlePriceChange = (value: number) => {
-    setPriceRange(value);
-    setCurrentPage(1);
-  };
+  // ── GSAP Reveal Animations ─────────────────────────────────────────────
+  useGSAP(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      // Header reveal
+      tl.from(".gsap-header", {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+      });
+
+      // Sidebar filter cards — staggered from left
+      tl.from(".gsap-filter-card", {
+        x: -40,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+      }, "-=0.3");
+
+      // Filter action buttons
+      tl.from(".gsap-filter-actions", {
+        y: 15,
+        opacity: 0,
+        duration: 0.4,
+      }, "-=0.2");
+
+      // Product cards — staggered scale up
+      tl.from(".gsap-product", {
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.05,
+      }, "-=0.3");
+
+      // Pagination
+      tl.from(".gsap-pagination", {
+        y: 20,
+        opacity: 0,
+        duration: 0.4,
+      }, "-=0.2");
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, { scope: containerRef });
 
   return (
-    <div className="bg-texture bg-background-light min-h-screen relative overflow-hidden">
+    <div ref={containerRef} className="bg-texture bg-background-light min-h-screen relative overflow-hidden">
       {/* ── Decorative Background Texts (styled like SUBURBIA SKATE hero) ── */}
       <div
         className="absolute top-[1%] -left-[3%] pointer-events-none select-none z-0"
@@ -413,7 +499,7 @@ export default function ShopPage() {
 
       <main className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b-4 border-background-dark border-dashed gap-4 relative">
+        <div className="gsap-header flex flex-col md:flex-row md:items-end justify-between mb-12 pb-6 border-b-4 border-background-dark border-dashed gap-4 relative">
           <div className="absolute -left-2 top-0 w-32 h-8 bg-primary/50 -rotate-3 z-0 pointer-events-none"></div>
           
           <div className="flex items-center gap-4 z-10">
@@ -469,7 +555,7 @@ export default function ShopPage() {
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 flex-shrink-0 space-y-10 font-mono text-lg">
             {/* Category Filter */}
-            <div className="relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.5deg]">
+            <div className="gsap-filter-card relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.5deg]">
               <div className="absolute -left-4 top-2 w-full h-4 bg-yellow-200 -z-10 -rotate-1"></div>
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 flex items-center justify-between border-b-2 border-black pb-2">
                 Category
@@ -480,11 +566,11 @@ export default function ShopPage() {
                   <label key={cat} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
                     <input
                       type="checkbox"
-                      checked={selectedCategories.includes(cat)}
+                      checked={pendingCategories.includes(cat)}
                       onChange={() => toggleCategory(cat)}
                       className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
                     />
-                    <span className={`ml-3 ${selectedCategories.includes(cat) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
+                    <span className={`ml-3 ${pendingCategories.includes(cat) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
                       {cat}
                     </span>
                     <span className="ml-auto font-mono text-sm bg-black text-white px-1 rounded-sm">{categoryCounts[cat]}</span>
@@ -494,41 +580,41 @@ export default function ShopPage() {
             </div>
 
             {/* Price Filter */}
-            <div className="bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.3deg]">
+            <div className="gsap-filter-card bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.3deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Price</h3>
               <div className="px-2">
                 <input
                   type="range"
                   min="40"
                   max="150"
-                  value={priceRange}
-                  onChange={(e) => handlePriceChange(Number(e.target.value))}
+                  value={pendingPriceRange}
+                  onChange={(e) => handlePendingPriceChange(Number(e.target.value))}
                   className="w-full bg-transparent appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #1a1a1a ${((priceRange - 40) / 110) * 100}%, #e5e5e5 ${((priceRange - 40) / 110) * 100}%)`
+                    background: `linear-gradient(to right, #1a1a1a ${((pendingPriceRange - 40) / 110) * 100}%, #e5e5e5 ${((pendingPriceRange - 40) / 110) * 100}%)`
                   }}
                 />
                 <div className="flex justify-between mt-4 font-mono font-bold text-sm">
                   <span>$40</span>
-                  <span className="bg-yellow-400 px-1 transform -rotate-3 border border-black">${priceRange}</span>
+                  <span className="bg-yellow-400 px-1 transform -rotate-3 border border-black">${pendingPriceRange}</span>
                   <span>$150</span>
                 </div>
               </div>
             </div>
 
             {/* Brand Filter */}
-            <div className="relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.3deg]">
+            <div className="gsap-filter-card relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.3deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Brand</h3>
               <div className="space-y-3 pl-2">
                 {brandOptions.map((brand) => (
                   <label key={brand} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
                     <input
                       type="checkbox"
-                      checked={selectedBrands.includes(brand)}
+                      checked={pendingBrands.includes(brand)}
                       onChange={() => toggleBrand(brand)}
                       className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
                     />
-                    <span className={`ml-3 ${selectedBrands.includes(brand) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
+                    <span className={`ml-3 ${pendingBrands.includes(brand) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
                       {brand}
                     </span>
                   </label>
@@ -537,7 +623,7 @@ export default function ShopPage() {
             </div>
 
             {/* Size Filter */}
-            <div className="bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.5deg]">
+            <div className="gsap-filter-card bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch rotate-[0.5deg]">
               <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Size</h3>
               <div className="grid grid-cols-3 gap-3">
                 {sizeOptions.map((size) => (
@@ -545,7 +631,7 @@ export default function ShopPage() {
                     key={size}
                     onClick={() => toggleSize(size)}
                     className={`px-1 py-2 text-sm font-bold font-mono border-2 transition-colors ${
-                      selectedSizes.includes(size)
+                      pendingSizes.includes(size)
                         ? "border-black bg-background-dark text-white transform -rotate-2 shadow-[2px_2px_0_0_#ccc]"
                         : "border-dashed border-gray-400 text-gray-500 hover:border-black hover:text-black bg-white"
                     }`}
@@ -554,6 +640,29 @@ export default function ShopPage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* ── Apply & Reset Filter Buttons ──────────────────────────── */}
+            <div className="gsap-filter-actions sticky bottom-4 flex flex-col gap-3 pt-2">
+              <button
+                onClick={applyFilters}
+                className={`relative w-full py-3 font-display font-bold text-lg uppercase tracking-wider border-2 border-black shadow-[3px_3px_0_0_#000] transition-all duration-200 ${
+                  hasPendingChanges
+                    ? "bg-primary text-white hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0_0_#000] -rotate-[0.5deg]"
+                    : "bg-gray-200 text-gray-500 cursor-default"
+                }`}
+              >
+                {hasPendingChanges && (
+                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 border border-black rounded-full animate-pulse" />
+                )}
+                ✓ Apply Filters
+              </button>
+              <button
+                onClick={resetFilters}
+                className="w-full py-2.5 font-display font-bold text-base uppercase tracking-wider bg-white text-black border-2 border-black shadow-[2px_2px_0_0_#000] hover:bg-red-50 hover:border-red-500 hover:text-red-600 hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0_0_#000] transition-all duration-200 rotate-[0.3deg]"
+              >
+                ✕ Reset All
+              </button>
             </div>
           </aside>
 
@@ -568,17 +677,21 @@ export default function ShopPage() {
             ) : (
               <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"} gap-8`}>
                 {paginatedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <div key={product.id} className="gsap-product">
+                    <ProductCard product={product} />
+                  </div>
                 ))}
               </div>
             )}
 
             {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            <div className="gsap-pagination">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
           </div>
         </div>
       </main>
