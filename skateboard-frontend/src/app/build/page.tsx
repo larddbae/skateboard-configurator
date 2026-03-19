@@ -1,4 +1,4 @@
-import Link from "next/link";
+        import Link from "next/link";
 import React from "react";
 
 import { CustomizerControlsProvider } from "./context";
@@ -6,11 +6,9 @@ import { fetchParts } from "@/lib/api";
 import Preview from "./Preview";
 import Controls from "./Controls";
 import Loading from "./Loading";
-import AIStyleAnalyzer from "@/components/AIStyleAnalyzer";
-import SaveDesignButton from "@/components/SaveDesignButton";
-import CheckoutButton from "@/components/CheckoutButton";
 import BuildPageFooter from "./BuildPageFooter";
 import ReceiptWidget from "./ReceiptWidget";
+import TopLeftControls from "./TopLeftControls";
 
 type SearchParams = {
   wheel?: string;
@@ -62,63 +60,13 @@ export default async function Page(props: {
         {/* Background textures */}
         <div className="absolute inset-0 bg-noise opacity-30 pointer-events-none z-0" />
 
-        {/* Header */}
-        <header className="flex items-center justify-between whitespace-nowrap border-b-4 border-black bg-white relative z-20 px-6 py-4 shadow-hard">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-4">
-              <div className="size-10 bg-black text-white flex items-center justify-center rounded-full transform -rotate-3 border-2 border-white shadow-md">
-                <span className="material-symbols-outlined text-[24px]">skateboarding</span>
-              </div>
-              <h2 className="text-black text-2xl font-black italic tracking-tighter uppercase transform skew-x-[-10deg]">
-                Suburbia Skate
-              </h2>
-            </Link>
-          </div>
-
-          {/* Center navigation */}
-          <div className="hidden md:flex flex-1 justify-center gap-8 absolute left-1/2 -translate-x-1/2">
-            <div className="flex items-center gap-6 bg-yellow-300 px-6 py-2 border-2 border-black rounded-sm transform rotate-1 shadow-hard">
-              <Link className="text-black font-bold hover:text-blue-600 hover:underline decoration-wavy transition-colors text-sm uppercase" href="/my-garage">Garage</Link>
-              <span className="text-black font-black">/</span>
-              <Link className="text-black font-bold hover:text-blue-600 hover:underline decoration-wavy transition-colors text-sm uppercase" href="/shop">Shop</Link>
-              <span className="text-black font-black">/</span>
-              <Link className="text-black font-bold hover:text-blue-600 hover:underline decoration-wavy transition-colors text-sm uppercase" href="/team">Community</Link>
-            </div>
-          </div>
-
-          {/* Right side */}
-          <div className="flex gap-4 items-center">
-            <div className="hidden sm:flex flex-col items-end mr-2 bg-black text-white px-3 py-1 transform -rotate-2">
-              <span className="text-[10px] uppercase tracking-widest font-bold text-yellow-300">Balance</span>
-              <span className="text-sm font-bold font-marker">2,450 CR</span>
-            </div>
-            <div className="bg-gradient-to-br from-blue-400 to-purple-500 rounded-full size-10 border-2 border-black shadow-hard-sm" />
-          </div>
-        </header>
-
         {/* Main Content */}
         <main className="flex-1 flex relative overflow-hidden z-10">
           {/* Left Side - Preview Area */}
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
             {/* Top-left info overlay */}
             <div className="absolute top-8 left-8 z-10 pointer-events-none">
-              <div className="flex items-center gap-2 mb-3 pointer-events-auto">
-                <Link
-                  href="/"
-                  className="bg-white border-2 border-black px-3 py-1 text-black hover:bg-black hover:text-white transition-colors text-sm font-bold flex items-center gap-1 shadow-hard-sm transform -rotate-1"
-                >
-                  <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                  BACK
-                </Link>
-                <button className="bg-white border-2 border-black px-3 py-1 text-black hover:bg-black hover:text-white transition-colors text-sm font-bold flex items-center gap-1 shadow-hard transform rotate-1 uppercase">
-                  <span className="material-symbols-outlined text-[16px]">share</span>
-                  SHARE
-                </button>
-                <button className="bg-white border-2 border-black px-3 py-1 text-black hover:bg-black hover:text-white transition-colors text-sm font-bold flex items-center gap-1 shadow-hard transform -rotate-1 uppercase">
-                  <span className="material-symbols-outlined text-[16px]">view_in_ar</span>
-                  AR VIEW
-                </button>
-              </div>
+              <TopLeftControls />
               <div className="bg-black inline-block px-4 py-2 transform rotate-1 shadow-hard">
                 <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter text-white uppercase">
                   Custom Setup
@@ -142,20 +90,7 @@ export default async function Page(props: {
               />
             </div>
 
-            {/* View controls */}
-            <div className="absolute bottom-28 right-8 flex flex-col gap-3 z-10">
-              <button aria-label="Rotate View" className="build-sticker p-3 bg-white border-2 border-black rounded-full text-black hover:bg-yellow-300 shadow-hard-sm transition-all transform -rotate-3">
-                <span className="material-symbols-outlined">360</span>
-              </button>
-              <button aria-label="Zoom In" className="build-sticker p-3 bg-white border-2 border-black rounded-full text-black hover:bg-yellow-300 shadow-hard-sm transition-all transform rotate-2">
-                <span className="material-symbols-outlined">zoom_in</span>
-              </button>
-              <button aria-label="Zoom Out" className="build-sticker p-3 bg-white border-2 border-black rounded-full text-black hover:bg-yellow-300 shadow-hard-sm transition-all transform -rotate-1">
-                <span className="material-symbols-outlined">zoom_out</span>
-              </button>
-            </div>
-
-            {/* Receipt Price Widget */}
+            {/* Bottom Status Bar */}
             <ReceiptWidget />
           </div>
 

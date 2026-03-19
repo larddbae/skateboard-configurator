@@ -9,6 +9,10 @@ export interface Part {
   price: number;
   stock: number;
   description: string | null;
+  weight: number;
+  durability: number;
+  speed: number;
+  pop: number;
   created_at: string;
   updated_at: string;
 }

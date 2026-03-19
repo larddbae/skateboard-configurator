@@ -14,10 +14,15 @@ class Part extends Model
         'price',
         'stock',
         'description',
+        'weight',
+        'durability',
+        'speed',
+        'pop',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'weight' => 'decimal:2',
     ];
 
     public function favorites()

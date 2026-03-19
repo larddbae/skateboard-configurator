@@ -48,9 +48,16 @@ export default function BuildPageFooter({ allParts }: Props) {
 
       {/* AI Chat Panel (collapsible) */}
       {showAI && (
-        <div className="border-2 border-black p-3 bg-gray-50 transform rotate-0 relative">
+        <div className="absolute bottom-full left-0 w-full mb-4 border-2 border-black p-3 bg-gray-50 transform rotate-0 z-30 shadow-hard">
           <div className="absolute -top-2 left-4 w-8 h-3 bg-tape/70 transform rotate-2 z-10" />
-          <AIStyleAnalyzer allParts={allParts} className="[&_.bg-zinc-800]:bg-gray-200 [&_.text-zinc-500]:text-gray-500 [&_.bg-zinc-900]:bg-white [&_.bg-zinc-700]:bg-gray-300 [&_.text-zinc-300]:text-gray-600 [&_.text-zinc-400]:text-gray-500 [&_.text-white]:text-black [&_.text-zinc-200]:text-gray-700 [&_.bg-purple-600]:bg-purple-500 [&_.focus\:ring-purple-500]:focus:ring-purple-400" />
+          <button 
+            onClick={() => setShowAI(false)}
+            className="absolute -top-3 -right-3 text-white bg-red-500 hover:bg-red-600 rounded-full border-2 border-black transform rotate-12 transition-all w-8 h-8 flex items-center justify-center pointer-events-auto shadow-hard-sm"
+            aria-label="Close AI Assist"
+          >
+            <span className="material-symbols-outlined text-[20px] font-bold">close</span>
+          </button>
+          <AIStyleAnalyzer allParts={allParts} className="[&_.bg-zinc-800]:bg-gray-200 [&_.text-zinc-500]:text-gray-500 [&_.bg-zinc-900]:bg-white [&_.bg-zinc-700]:bg-gray-300 [&_.text-zinc-300]:text-gray-600 [&_.text-zinc-400]:text-gray-500 [&_.text-white]:text-black [&_.text-zinc-200]:text-gray-700 [&_.bg-purple-600]:bg-purple-500 [&_.focus\:ring-purple-500]:focus:ring-purple-400 pt-6" />
         </div>
       )}
 

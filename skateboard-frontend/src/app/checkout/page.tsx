@@ -3,13 +3,44 @@
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { fetchParts } from "@/lib/api";
 
-export default function CheckoutPage() {
-  const { items, subtotal, clearCart } = useCart();
+function CheckoutContent() {
+  const { items: cartItems, subtotal: cartSubtotal, clearCart } = useCart();
   const [step, setStep] = useState<"shipping" | "payment" | "done">("shipping");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [customItems, setCustomItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const ids = [
+      searchParams.get('deck'),
+      searchParams.get('wheel'),
+      searchParams.get('truck'),
+      searchParams.get('bolt')
+    ].filter(Boolean);
+
+    if (ids.length > 0) {
+      fetchParts().then((parts) => {
+        const matches = parts
+          .filter(p => ids.includes(p.id.toString()))
+          .map(p => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price),
+            image: p.image_url || p.texture_url || '/images/shop/deck1.png',
+            quantity: 1,
+            size: 'Build'
+          }));
+        setCustomItems(matches);
+      });
+    }
+  }, [searchParams]);
+
+  const items = customItems.length > 0 ? customItems : cartItems;
+  const subtotal = customItems.length > 0 ? customItems.reduce((acc, item) => acc + item.price, 0) : cartSubtotal;
 
   // Calculated values (mock)
   const shippingCost = 12.00;
@@ -22,7 +53,7 @@ export default function CheckoutPage() {
        // Complete Order Logic
        // In real app, await payment processing here
        clearCart();
-       router.push("/order-success");
+       router.push("/orders?success=true");
     }
   };
 
@@ -280,5 +311,13 @@ export default function CheckoutPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-suburbia-blue"></div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

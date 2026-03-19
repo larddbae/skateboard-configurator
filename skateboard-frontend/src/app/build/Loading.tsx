@@ -10,7 +10,7 @@ export default function Loading() {
   return (
     <div
       className={clsx(
-        "absolute inset-0 grid place-content-center bg-brand-navy font-sans text-[15vw] text-white transition-opacity duration-1000",
+        "fixed inset-0 z-[100] grid place-content-center bg-brand-navy font-sans text-[15vw] text-white transition-opacity duration-1000",
         progress >= 100 ? "pointer-events-none opacity-0" : "opacity-100"
       )}
     >
