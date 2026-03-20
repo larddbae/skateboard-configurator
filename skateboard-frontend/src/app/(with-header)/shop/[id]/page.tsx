@@ -91,16 +91,20 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState("8.0\"");
   const [gripTape, setGripTape] = useState("free");
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"specs" | "artist" | "video">("specs");
   const { addToCart } = useCart();
 
   return (
-    <div className="bg-background-light text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white">
+    <div className="bg-background-light text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white bg-texture">
       {/* Background Texture Overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-40 mix-blend-multiply z-50 bg-paper-texture"></div>
+      <div className="fixed inset-0 pointer-events-none opacity-40 mix-blend-multiply z-[49] bg-paper-texture"></div>
 
       {/* Scattered Skate Icon Pattern */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-skate-pattern"></div>
+      
+      {/* Added Team Page Stardust Texture */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
 
       {/* Warm Spotlight Glow behind product area */}
       <div className="absolute inset-0 pointer-events-none z-0 bg-product-spotlight"></div>
@@ -183,6 +187,54 @@ export default function ProductDetailPage() {
           </div>
         </div>
       )}
+      {/* ══════════ Image Gallery Lightbox ══════════ */}
+      {lightboxOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-6 right-6 text-white hover:text-primary transition-colors z-50 p-2 border-2 border-transparent hover:border-white rounded-full flex items-center justify-center"
+          >
+            <span className="material-icons text-4xl">close</span>
+          </button>
+          
+          <div className="relative w-full max-w-5xl h-[80vh] flex items-center justify-center">
+             <Image
+              src={product.images[selectedImage]}
+              alt="Gallery Image"
+              fill
+              className="object-contain"
+              unoptimized
+             />
+             
+             {/* Nav buttons */}
+             <button
+               onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev > 0 ? prev - 1 : product.images.length - 1)); }}
+               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 md:p-4 shadow-hard hover:bg-primary hover:scale-110 transition-all flex items-center justify-center border-4 border-black"
+             >
+               <span className="material-icons text-xl md:text-2xl ml-[-2px]">arrow_back_ios_new</span>
+             </button>
+             <button
+               onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev < product.images.length - 1 ? prev + 1 : 0)); }}
+               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 md:p-4 shadow-hard hover:bg-primary hover:scale-110 transition-all flex items-center justify-center border-4 border-black"
+             >
+               <span className="material-icons text-xl md:text-2xl mr-[-2px]">arrow_forward_ios</span>
+             </button>
+          </div>
+          
+          {/* Thumbnails row */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 px-4 max-w-full overflow-x-auto pb-4">
+             {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`relative w-20 h-20 flex-shrink-0 transition-all bg-white ${selectedImage === idx ? 'border-4 border-primary scale-110 z-10 shadow-brutal' : 'border-2 border-black opacity-60 hover:opacity-100'}`}
+                >
+                  <Image src={img} alt={`Thumb ${idx+1}`} fill className="object-cover" unoptimized />
+                </button>
+             ))}
+          </div>
+        </div>
+      )}
 
       <main className="relative z-10 pt-12 pb-24">
          {/* Background Text Overlay */}
@@ -225,18 +277,22 @@ export default function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx + 1)}
-                    className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 ${selectedImage === idx + 1 ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
+                    className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 shadow-sm hover:shadow-hard-hover hover:-translate-y-1 ${selectedImage === idx + 1 ? 'border-4 border-black ring-0' : 'border-2 border-black opacity-80 hover:opacity-100'}`}
                   >
                     <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain" unoptimized />
                   </button>
                 ))}
-                 <button
-                    onClick={() => setSelectedImage(4)}
-                    className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 overflow-hidden ${selectedImage === 4 ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'}`}
-                  >
-                     <Image src={product.images[4]} alt="Lifestyle View" fill className="object-cover" unoptimized />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white font-bebas text-xl">+2</div>
-                  </button>
+                {product.images.length > 4 && (
+                  <button
+                     onClick={() => { setLightboxOpen(true); setSelectedImage(4); }}
+                     className={`rough-border-sm bg-white p-2 transition relative h-24 overflow-hidden border-2 border-black shadow-sm group hover:shadow-hard-hover hover:-translate-y-1`}
+                   >
+                      <Image src={product.images[4]} alt="Lifestyle View" fill className="object-cover group-hover:scale-110 transition-transform duration-500" unoptimized />
+                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white font-anton text-2xl group-hover:bg-primary/80 transition-colors">
+                       +{product.images.length - 4}
+                     </div>
+                   </button>
+                )}
               </div>
             </div>
 
@@ -272,9 +328,9 @@ export default function ProductDetailPage() {
                     <h3 className="font-bebas text-2xl tracking-wide text-gray-900">Select Size</h3>
                     <button
                       onClick={() => setSizeGuideOpen(true)}
-                      className="text-xs font-bold font-mono underline hover:text-primary transition-colors cursor-pointer"
+                      className="text-xs font-marker bg-brand-pink border-2 border-black px-3 py-1 shadow-brutal hover:shadow-none hover:translate-y-1 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 transform rotate-2"
                     >
-                      Size Guide?
+                      <span className="material-icons text-[14px]">straighten</span> Size Guide?
                     </button>
                   </div>
                   <div className="grid grid-cols-4 gap-3">
@@ -352,27 +408,27 @@ export default function ProductDetailPage() {
 
           {/* ══════════ Tabbed Specs / Artist Bio / Video Review Section ══════════ */}
           <div className="mt-24 max-w-4xl mx-auto">
-             <div className="border-b-4 border-black mb-8 flex space-x-8 overflow-x-auto">
+             <div className="flex flex-wrap gap-4 mb-8">
                 <button
                   onClick={() => setActiveTab("specs")}
-                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
-                    activeTab === "specs" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  className={`px-6 py-3 text-xl md:text-2xl font-rubik-mono uppercase transition-all border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${
+                    activeTab === "specs" ? "bg-primary text-black" : "bg-white text-gray-500 hover:text-black"
                   }`}
                 >
                   The Specs
                 </button>
                 <button
                   onClick={() => setActiveTab("artist")}
-                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
-                    activeTab === "artist" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  className={`px-6 py-3 text-xl md:text-2xl font-rubik-mono uppercase transition-all border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${
+                    activeTab === "artist" ? "bg-team-yellow text-black" : "bg-white text-gray-500 hover:text-black"
                   }`}
                 >
                   Artist Bio
                 </button>
                 <button
                   onClick={() => setActiveTab("video")}
-                  className={`pb-2 text-2xl font-anton uppercase transition-colors ${
-                    activeTab === "video" ? "border-b-4 border-primary -mb-1 text-black" : "text-gray-400 hover:text-black"
+                  className={`px-6 py-3 text-xl md:text-2xl font-rubik-mono uppercase transition-all border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 ${
+                    activeTab === "video" ? "bg-brand-pink text-black" : "bg-white text-gray-500 hover:text-black"
                   }`}
                 >
                   Video Review
@@ -381,8 +437,8 @@ export default function ProductDetailPage() {
 
             {/* ── Tab: Specs ── */}
             {activeTab === "specs" && (
-              <div className="bg-white rough-border p-8 relative">
-                 <div className="absolute -left-4 -top-4 w-12 h-12 bg-black rounded-full flex items-center justify-center text-white z-20">
+              <div className="bg-white border-[4px] border-black shadow-hard p-8 md:p-12 relative z-10 mix-blend-normal">
+                 <div className="absolute -left-4 -top-4 w-12 h-12 bg-black rounded-full flex items-center justify-center text-white z-20 border-2 border-white">
                    <span className="material-icons">bolt</span>
                  </div>
                  <div className="grid md:grid-cols-2 gap-8">
@@ -409,8 +465,8 @@ export default function ProductDetailPage() {
 
             {/* ── Tab: Artist Bio ── */}
             {activeTab === "artist" && (
-              <div className="bg-white rough-border p-8 relative">
-                <div className="absolute -left-4 -top-4 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white z-20">
+              <div className="bg-white border-[4px] border-black shadow-hard p-8 md:p-12 relative z-10 mix-blend-normal">
+                <div className="absolute -left-4 -top-4 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-black border-2 border-black shadow-sm z-20">
                   <span className="material-icons">brush</span>
                 </div>
                 <div className="grid md:grid-cols-[180px_1fr] gap-8">
@@ -467,8 +523,8 @@ export default function ProductDetailPage() {
 
             {/* ── Tab: Video Review ── */}
             {activeTab === "video" && (
-              <div className="bg-white rough-border p-8 relative">
-                <div className="absolute -left-4 -top-4 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white z-20">
+              <div className="bg-white border-[4px] border-black shadow-hard p-8 md:p-12 relative z-10 mix-blend-normal">
+                <div className="absolute -left-4 -top-4 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-black border-2 border-black shadow-sm z-20">
                   <span className="material-icons">play_arrow</span>
                 </div>
                 <h3 className="font-anton text-2xl uppercase mb-4">Board Review — The Ghost Ride Pro</h3>
@@ -491,19 +547,19 @@ export default function ProductDetailPage() {
 
           {/* Related Products: Fresh Cuts */}
           <div className="mt-24 border-t-4 border-black pt-12">
-            <div className="flex justify-between items-end mb-12">
-               <h2 className="text-6xl font-anton uppercase text-black leading-none">Fresh <br/>Cuts</h2>
-               <Link href="/shop" className="hidden sm:block font-marker text-xl text-primary hover:text-black transition-colors underline decoration-wavy">See all drops -&gt;</Link>
-            </div>
+             <div className="flex justify-between items-end mb-12">
+                <h2 className="text-6xl font-anton uppercase text-black leading-none tracking-tight">Fresh Cuts</h2>
+                <Link href="/shop" className="hidden sm:inline-block font-marker text-xl text-primary hover:text-black transition-colors underline decoration-wavy">See all drops -&gt;</Link>
+             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {relatedProducts.map(prod => (
                  <div key={prod.id} className="group relative">
                     {prod.badge && (
                        <div className="absolute -top-2 -left-2 bg-brand-pink text-black font-bold font-mono text-xs px-2 py-1 z-20 border border-black transform -rotate-6">{prod.badge}</div>
                     )}
-                    <div className="aspect-[2/3] bg-gray-100 rough-border-sm mb-4 overflow-hidden relative">
+                    <div className="aspect-[2/3] bg-gray-100 border-[4px] border-black mb-4 overflow-hidden relative shadow-hard group-hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all group-hover:-translate-y-2">
                        <Image src={prod.image} alt={prod.name} fill className="object-cover transform group-hover:scale-110 transition-transform duration-500" unoptimized />
-                       <button className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-brutal flex items-center justify-center">
+                       <button className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center border-2 border-transparent">
                           <span className="material-icons">add</span>
                        </button>
                     </div>
