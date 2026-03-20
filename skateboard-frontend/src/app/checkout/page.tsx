@@ -58,9 +58,17 @@ function CheckoutContent() {
   };
 
   return (
-    <div className="font-mono bg-suburbia-blue text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-brand-orange selection:text-white">
+    <div className="font-mono bg-suburbia-blue text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-brand-orange selection:text-white bg-texture">
       {/* Background Texture Overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 bg-texture z-0 mix-blend-overlay"></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+
+      {/* Back to Shop Button */}
+      <div className="absolute top-6 left-6 z-50">
+        <Link href="/shop" className="flex items-center gap-2 group bg-white border-2 border-black px-4 py-2 shadow-hard hover:shadow-hard-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all transform -rotate-2">
+          <span className="material-icons text-black transition-transform group-hover:-translate-x-1">arrow_back</span>
+          <span className="font-rubik-mono text-black text-sm uppercase">Shop</span>
+        </Link>
+      </div>
 
       {/* Decorative Background Text */}
       <div className="absolute top-20 left-10 opacity-20 transform -rotate-12 pointer-events-none z-0">
@@ -70,28 +78,7 @@ function CheckoutContent() {
         <h1 className="font-display text-9xl text-brand-orange">RIDE</h1>
       </div>
 
-      {/* Simplified Header */}
-      <nav className="relative z-20 w-full px-8 py-6 flex justify-between items-center bg-transparent">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="font-marker text-3xl md:text-4xl text-white transform -rotate-2 drop-shadow-md group-hover:scale-105 transition-transform">
-            <span className="text-brand-orange">SUB</span>URBIA
-          </div>
-        </Link>
-        <div className="hidden md:flex gap-8 text-white font-bold uppercase tracking-widest text-sm">
-            {/* Minimal nav links or breadcrumbs to return */}
-          <Link href="/shop" className="hover:text-brand-orange transition-colors">Return to Shop</Link>
-        </div>
-        <div className="flex items-center gap-4 text-white">
-          <span className="material-icons cursor-pointer hover:text-brand-orange">search</span>
-          <div className="relative">
-             {/* Cart Icon (ReadOnly here?) */}
-            <Link href="#" className="relative">
-                <span className="material-icons cursor-pointer hover:text-brand-orange">shopping_bag</span>
-                <span className="absolute -top-1 -right-1 bg-brand-orange text-black text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full border border-black">{items.length}</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
+
 
       <main className="relative z-10 container mx-auto px-4 pb-20 pt-8 flex flex-col items-center">
         <div className="w-full max-w-6xl bg-paper-cream shadow-[4px_4px_0px_0px_#000000] border-2 border-black relative overflow-hidden">
@@ -294,13 +281,7 @@ function CheckoutContent() {
           <div className="w-full h-3 bg-suburbia-purple mt-12 border-t border-black"></div>
         </div>
         
-        {/* Footer Links */}
-        <div className="mt-12 flex gap-6 text-white/60 text-sm font-mono">
-          <Link href="#" className="hover:text-brand-orange underline decoration-wavy">Refund Policy</Link>
-          <Link href="#" className="hover:text-brand-orange underline decoration-wavy">Shipping Policy</Link>
-          <Link href="#" className="hover:text-brand-orange underline decoration-wavy">Privacy Policy</Link>
-          <Link href="#" className="hover:text-brand-orange underline decoration-wavy">Terms of Service</Link>
-        </div>
+
       </main>
       
       {/* Help Button */}
