@@ -30,7 +30,7 @@ function CheckoutContent() {
             id: p.id,
             name: p.name,
             price: Number(p.price),
-            image: p.image_url || p.texture_url || '/images/shop/deck1.png',
+            image: p.texture_url || '/images/shop/deck1.png',
             quantity: 1,
             size: 'Build'
           }));
