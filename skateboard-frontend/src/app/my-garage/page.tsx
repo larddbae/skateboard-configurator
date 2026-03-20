@@ -15,6 +15,8 @@ export default function MyGaragePage() {
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedDesignToDelete, setSelectedDesignToDelete] = useState<SavedDesign | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -38,19 +40,32 @@ export default function MyGaragePage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this design?")) return;
+  const handleDeleteClick = (design: SavedDesign) => {
+    setSelectedDesignToDelete(design);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedDesignToDelete) return;
     
-    setDeletingId(id);
+    setDeletingId(selectedDesignToDelete.id);
+    setShowDeleteModal(false);
+    
     try {
-      await deleteDesign(id);
-      setDesigns(designs.filter((d) => d.id !== id));
+      await deleteDesign(selectedDesignToDelete.id);
+      setDesigns(designs.filter((d) => d.id !== selectedDesignToDelete.id));
     } catch (error) {
       console.error("Failed to delete design:", error);
       alert("Failed to delete design");
     } finally {
       setDeletingId(null);
+      setSelectedDesignToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setSelectedDesignToDelete(null);
   };
 
   const loadDesignUrl = (design: SavedDesign) => {
@@ -67,12 +82,11 @@ export default function MyGaragePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-zinc-900 font-sans relative overflow-x-hidden selection:bg-brand-lime selection:text-black">
+    <div className="min-h-screen bg-background-light dark:bg-zinc-900 font-sans relative overflow-x-hidden selection:bg-brand-lime selection:text-black bg-texture">
       <Header />
       
       {/* Background Noise & Grunge Overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
-      <div className="fixed inset-0 pointer-events-none z-0 bg-[url('https://www.transparenttextures.com/patterns/grunge-wall.png')] opacity-10"></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
       
       {/* Big Rotated Text Background */}
       <div className="fixed top-20 right-0 w-full h-full pointer-events-none z-0 overflow-hidden flex justify-center items-center opacity-[0.03]">
@@ -163,15 +177,6 @@ export default function MyGaragePage() {
                         )}
                     </div>
 
-                    {/* Parts Icons */}
-                    <div className="flex gap-2 mb-6 justify-center">
-                        {['deck', 'hardware', 'build'].map((icon, idx) => (
-                             <div key={icon} className="w-8 h-8 rounded bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-black dark:text-white border border-black dark:border-zinc-600" title="Part">
-                                <span className="material-icons text-sm">{icon}</span>
-                            </div>
-                        ))}
-                    </div>
-
                     {/* Actions */}
                     <div className="mt-auto grid grid-cols-4 gap-2">
                         <Link
@@ -181,7 +186,7 @@ export default function MyGaragePage() {
                             Load <span className="material-icons text-sm">arrow_forward</span>
                         </Link>
                         <button
-                            onClick={() => handleDelete(design.id)}
+                            onClick={() => handleDeleteClick(design)}
                             disabled={deletingId === design.id}
                             className="col-span-1 bg-zinc-200 hover:bg-red-500 text-black hover:text-white rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center group/trash"
                         >
@@ -196,6 +201,42 @@ export default function MyGaragePage() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-zinc-900 border-2 border-brand-orange shadow-[8px_8px_0px_0px_rgba(255,107,53,1)] max-w-sm w-full p-6 relative transform rotate-1">
+            <div className="absolute -top-3 -left-3 w-12 h-12 bg-red-500 rounded-full blur-xl opacity-20"></div>
+            
+            {/* Caution Tape */}
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-team-yellow text-black text-xs font-mono font-bold px-4 py-1 border border-black transform -rotate-2">
+              WARNING
+            </div>
+            
+            <h3 className="font-display text-2xl uppercase text-white mb-2 relative z-10 mt-2">
+              Trash this design?
+            </h3>
+            <p className="font-mono text-gray-400 text-sm mb-6 relative z-10">
+              Are you sure you want to delete <span className="text-brand-orange font-bold uppercase">{selectedDesignToDelete?.name}</span>? This sick build will be gone forever.
+            </p>
+            
+            <div className="flex gap-3 relative z-10">
+              <button
+                onClick={cancelDelete}
+                className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-display uppercase py-3 px-4 border-2 border-zinc-600 shadow-[2px_2px_0px_0px_rgba(82,82,91,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 bg-red-600 hover:bg-red-500 text-white font-display uppercase py-3 px-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
