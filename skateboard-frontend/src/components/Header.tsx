@@ -6,6 +6,9 @@ import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const SERVER_BASE_URL = API_URL.replace(/\/api\/?$/, '');
+
 export function Header() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
   const { items, toggleCart } = useCart();
@@ -38,6 +41,17 @@ export function Header() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  // Get user avatar URL
+  const getAvatarUrl = () => {
+    if (user?.avatar) {
+      if (user.avatar.startsWith('/storage/')) {
+        return `${SERVER_BASE_URL}${user.avatar}`;
+      }
+      return user.avatar;
+    }
+    return null;
   };
 
   const navLinks = [
@@ -132,9 +146,17 @@ export function Header() {
                   className="flex items-center space-x-2 focus:outline-none"
                 >
                   <div className="w-10 h-10 bg-primary border-2 border-white rounded-full overflow-hidden shadow-sketch-white flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {getInitials(user.name)}
-                    </span>
+                    {getAvatarUrl() ? (
+                      <img 
+                        src={getAvatarUrl()!} 
+                        alt="User avatar" 
+                        className="w-full h-full object-cover grayscale contrast-125"
+                      />
+                    ) : (
+                      <span className="text-white font-bold text-sm">
+                        {getInitials(user.name)}
+                      </span>
+                    )}
                   </div>
                   <span className="hidden lg:block font-display text-sm bg-secondary text-white px-3 py-1 border-2 border-black -ml-4 z-10 transform rotate-3">
                     {user.name.split(" ")[0].toUpperCase()}

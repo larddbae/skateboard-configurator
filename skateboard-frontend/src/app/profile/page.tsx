@@ -211,13 +211,9 @@ export default function ProfilePage() {
                     <span className="material-symbols-outlined group-hover:-rotate-12 transition-transform">warehouse</span>
                     <span className="font-hand font-bold text-lg">My Garage</span>
                 </Link>
-                <Link href="/addresses" className="group flex items-center gap-3 px-4 py-2 text-ink hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">location_on</span>
-                    <span className="font-hand font-bold text-lg">Addresses</span>
-                </Link>
-                 <Link href="/security" className="group flex items-center gap-3 px-4 py-2 text-ink hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined group-hover:-rotate-12 transition-transform">shield</span>
-                    <span className="font-hand font-bold text-lg">Security</span>
+                <Link href="/" className="group flex items-center gap-3 px-4 py-2 text-ink hover:text-primary transition-colors">
+                    <span className="material-symbols-outlined group-hover:-rotate-12 transition-transform">home</span>
+                    <span className="font-hand font-bold text-lg">Back to Home</span>
                 </Link>
             </nav>
 
