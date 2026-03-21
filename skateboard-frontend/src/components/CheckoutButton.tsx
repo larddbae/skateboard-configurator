@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCustomizerControls } from "@/app/build/context";
-import { checkout } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import clsx from "clsx";
 
 export default function CheckoutButton() {
   const router = useRouter();

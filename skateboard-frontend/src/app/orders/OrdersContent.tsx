@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import { fetchOrders } from "@/lib/api";
 import { Order } from "@/lib/types";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export default function OrdersContent() {
   const router = useRouter();
@@ -16,6 +19,11 @@ export default function OrdersContent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const showSuccess = searchParams.get("success") === "true";
+  
+  const { addToCart } = useCart();
+  const receiptRef = useRef<HTMLDivElement>(null);
+  const [activeInvoiceOrder, setActiveInvoiceOrder] = useState<Order | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -52,6 +60,46 @@ export default function OrdersContent() {
     }
   };
 
+  const handleBuyAgain = (order: Order) => {
+    if (!order.items) return;
+    order.items.forEach((item) => {
+      addToCart({
+        id: item.part_id.toString(),
+        name: item.name,
+        price: Number(item.price),
+        image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=320&h=240&fit=crop",
+      });
+    });
+  };
+
+  const handleDownloadInvoice = async (order: Order) => {
+    setActiveInvoiceOrder(order);
+    setIsGeneratingPdf(true);
+    // Wait for the next tick so the hidden receipt div renders
+    setTimeout(async () => {
+      if (receiptRef.current) {
+        try {
+          const canvas = await html2canvas(receiptRef.current, {
+            scale: 2,
+            backgroundColor: "#18181b", // matching bg-zinc-900
+          });
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+          pdf.save(`suburbia-receipt-${order.id}.pdf`);
+        } catch (error) {
+          console.error("Error generating PDF:", error);
+        } finally {
+          setIsGeneratingPdf(false);
+          setActiveInvoiceOrder(null);
+        }
+      }
+    }, 100);
+  };
+
   if (authLoading || (!isAuthenticated && !authLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -61,7 +109,8 @@ export default function OrdersContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative z-10">
+    <div className="min-h-screen flex flex-col relative z-10 bg-texture">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
       <Header />
       
       <main className="mx-auto max-w-5xl px-4 pt-32 pb-20 w-full">
@@ -165,7 +214,7 @@ export default function OrdersContent() {
                                 {order.items.slice(0, 4).map((item, idx) => (
                                     <div key={idx} className="w-16 h-16 rounded-full border-2 border-white dark:border-zinc-800 bg-gray-100 dark:bg-zinc-800 overflow-hidden relative shadow-md transform hover:scale-110 hover:z-10 transition-transform">
                                         <img 
-                                            src="https://loremflickr.com/320/240/skateboard" // Placeholder or actual item image if available
+                                            src="https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=320&h=240&fit=crop" // Placeholder or actual item image if available
                                             alt={item.name}
                                             className="w-full h-full object-cover"
                                         />
@@ -201,11 +250,18 @@ export default function OrdersContent() {
                         </div>
                         
                         <div className="flex gap-4 mt-6">
-                            <button className="font-bold uppercase text-xs text-brand-orange hover:text-orange-600 transition-colors border-2 border-transparent hover:border-b-brand-orange pb-0.5">
+                            <button 
+                                onClick={() => handleBuyAgain(order)}
+                                className="font-bold uppercase text-xs text-brand-orange hover:text-orange-600 transition-colors border-2 border-transparent hover:border-b-brand-orange pb-0.5"
+                            >
                                 Buy Again
                             </button>
-                             <button className="font-bold uppercase text-xs text-gray-500 hover:text-black dark:hover:text-white transition-colors border-2 border-transparent hover:border-b-gray-500 pb-0.5">
-                                Invoice
+                             <button 
+                                onClick={() => handleDownloadInvoice(order)}
+                                disabled={isGeneratingPdf}
+                                className="font-bold uppercase text-xs text-gray-500 hover:text-black dark:hover:text-white transition-colors border-2 border-transparent hover:border-b-gray-500 pb-0.5 disabled:opacity-50"
+                            >
+                                {isGeneratingPdf && activeInvoiceOrder?.id === order.id ? 'Loading...' : 'Invoice'}
                             </button>
                         </div>
                     </div>
@@ -216,12 +272,64 @@ export default function OrdersContent() {
         )}
 
         {/* Back Link */}
-        <div className="mt-16 text-center">
-          <Link href="/" className="text-zinc-500 hover:text-brand-primary font-display uppercase tracking-widest border-b-2 border-transparent hover:border-brand-primary pb-1 transition-all">
-            ← Back to home
+        <div className="mt-16 mb-8 text-center">
+          <Link href="/" className="inline-flex items-center gap-2 group bg-white dark:bg-zinc-900 border-2 border-black text-black dark:text-white font-rubik-mono uppercase tracking-widest px-8 py-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+            <span className="material-icons transform group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            Back to home
           </Link>
         </div>
       </main>
+
+      {/* Hidden Receipt used for HTML to PDF Generation */}
+      {activeInvoiceOrder && (
+        <div className="absolute top-[-9999px] left-[-9999px] opacity-0 pointer-events-none">
+          <div ref={receiptRef} className="w-[800px] bg-zinc-900 border-4 border-black p-12 shadow-[8px_8px_0_0_#ff6b35] relative">
+              <div className="flex justify-between items-end mb-8 border-b-2 border-dashed border-zinc-600 pb-6 gap-4">
+                  <div>
+                      <h2 className="font-rubik-mono font-bold text-3xl mb-1 text-white tracking-wider">SUBURBIA SKATE</h2>
+                      <h3 className="font-rubik text-xl text-brand-orange uppercase mb-1">Receipt</h3>
+                      <p className="text-sm text-gray-400 font-mono">Order #SUB-{activeInvoiceOrder.id}</p>
+                  </div>
+                  <div className="text-right font-mono">
+                      <p className="font-bold text-brand-orange uppercase">Date</p>
+                      <p className="text-sm text-gray-300">
+                          {new Date(activeInvoiceOrder.created_at).toLocaleDateString("en-US", {
+                              year: "numeric", month: "long", day: "numeric"
+                          })}
+                      </p>
+                  </div>
+              </div>
+
+              <div className="space-y-6 mb-8 font-mono">
+                  {activeInvoiceOrder.items?.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                        <div className="flex-grow">
+                            <h4 className="font-bold text-lg text-white">{item.name}</h4>
+                            <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
+                        </div>
+                        <div className="text-right font-bold text-xl text-white">
+                            ${Number(item.price).toFixed(2)}
+                        </div>
+                    </div>
+                  ))}
+              </div>
+
+              <div className="border-t-2 border-zinc-600 pt-6 font-mono space-y-2">
+                  <div className="flex justify-between font-rubik font-black text-3xl mt-4 pt-4 border-t-2 border-dashed border-zinc-600 text-white">
+                      <span>TOTAL</span>
+                      <span className="text-suburbia-lime drop-shadow-[2px_2px_0_#000]">${Number(activeInvoiceOrder.total_price).toFixed(2)}</span>
+                  </div>
+              </div>
+
+              <div className="mt-8 border-t-2 border-zinc-600 pt-6">
+                  <div className="flex flex-col gap-1 font-mono text-sm text-gray-300">
+                      <p className="font-bold text-brand-orange uppercase mb-1">Status</p>
+                      <p className="uppercase">{activeInvoiceOrder.status}</p>
+                  </div>
+              </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
