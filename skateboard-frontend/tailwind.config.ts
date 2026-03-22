@@ -100,9 +100,14 @@ export default {
           "75%": { filter: 'url("#squiggle-3")' },
           "100%": { filter: 'url("#squiggle-4")' },
         },
+        fadeSlideUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         squiggle: "squiggle .5s infinite",
+        "fade-slide-up": "fadeSlideUp 0.5s ease-out both",
       },
     },
   },

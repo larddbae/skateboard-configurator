@@ -41,6 +41,7 @@ const categories = ["All", "Orders", "Shipping", "Returns", "Product"];
 export default function FAQPage() {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const filteredFaqs = faqs.filter(faq => {
       const matchesCategory = filter === "All" || faq.category === filter;
@@ -49,14 +50,14 @@ export default function FAQPage() {
   });
 
   return (
-    <div className="bg-suburbia-pink min-h-screen relative overflow-hidden font-space-mono text-gray-900">
+    <div className="bg-suburbia-pink min-h-screen relative overflow-hidden font-space-mono text-gray-900 bg-texture">
        {/* Background Noise & Decorations */}
        <div className="fixed inset-0 pointer-events-none opacity-20 bg-grain-texture z-0 mix-blend-overlay"></div>
        <div className="absolute top-20 left-10 opacity-10 transform -rotate-12 pointer-events-none">
-            <h1 className="font-marker text-9xl text-black">SK8</h1>
+            <h1 className="font-display text-9xl text-black">SK8</h1>
         </div>
         <div className="absolute bottom-40 right-10 opacity-10 transform rotate-12 pointer-events-none">
-            <h1 className="font-marker text-9xl text-black">GRIND</h1>
+            <h1 className="font-display text-9xl text-black">GRIND</h1>
         </div>
         
       <main className="relative z-10 max-w-5xl mx-auto px-4 py-12 md:py-20">
@@ -97,7 +98,10 @@ export default function FAQPage() {
             {categories.map((cat, index) => (
                 <button 
                     key={cat}
-                    onClick={() => setFilter(cat)}
+                    onClick={() => {
+                        setFilter(cat);
+                        setOpenIndex(null);
+                    }}
                     className={`
                         px-6 py-3 font-display text-xl uppercase tracking-wide transform hover:-translate-y-1 transition-transform border-2 border-black shadow-[2px_3px_5px_rgba(0,0,0,0.3)]
                         ${filter === cat ? 'bg-brand-orange text-black' : 'bg-white text-black hover:bg-gray-100'} 
@@ -113,24 +117,35 @@ export default function FAQPage() {
         </div>
 
         {/* FAQ Accordion List */}
-        <div className="space-y-6 max-w-3xl mx-auto">
+        <div key={filter} className="space-y-6 max-w-3xl mx-auto">
             {filteredFaqs.map((faq, index) => (
-                <div key={index} className="relative group">
+                <div 
+                    key={index} 
+                    className="relative group animate-fade-slide-up"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                >
                     <div className="absolute inset-0 bg-black translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" style={{ clipPath: "polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)" }}></div>
-                    <div className="relative bg-paper-cream border-2 border-black p-6 group-open:bg-white" style={{ clipPath: "polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)" }}>
-                        <details className="group/details">
-                            <summary className="flex justify-between items-start cursor-pointer list-none">
+                    <div className={`relative bg-paper-cream border-2 border-black p-6 transition-colors duration-300 ${openIndex === index ? 'bg-white' : ''}`} style={{ clipPath: "polygon(0% 0%, 100% 2%, 98% 100%, 2% 98%)" }}>
+                        <div className="group/details">
+                            <button 
+                                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                                className="w-full flex justify-between items-start cursor-pointer list-none text-left focus:outline-none"
+                            >
                                 <h3 className="font-display text-2xl md:text-3xl text-black uppercase leading-tight pr-8">
                                     {faq.question}
                                 </h3>
-                                <span className="text-suburbia-lime flex-shrink-0 transform transition-transform group-open/details:rotate-45">
+                                <span className={`text-suburbia-lime flex-shrink-0 transform transition-transform duration-300 ${openIndex === index ? 'rotate-45' : ''}`}>
                                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4"></path></svg>
                                 </span>
-                            </summary>
-                            <div className="mt-4 font-space-mono text-gray-800 leading-relaxed border-t-2 border-black/10 pt-4 border-dashed animate-in fade-in slide-in-from-top-2">
-                                <p>{faq.answer}</p>
+                            </button>
+                            <div className={`grid transition-all duration-300 ease-in-out ${openIndex === index ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+                                <div className="overflow-hidden">
+                                    <div className="font-space-mono text-gray-800 leading-relaxed border-t-2 border-black/10 pt-4 border-dashed">
+                                        <p>{faq.answer}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </details>
+                        </div>
                     </div>
                 </div>
             ))}
@@ -155,16 +170,7 @@ export default function FAQPage() {
                     </Link>
                 </div>
             </div>
-             {/* Use next/image for the skater icon if possible, but the URL is external. Assuming configured or using allow-list. Using img for now to match code.html style rapidly or next/image with domains config. 
-                 It's an external googleusercontent URL, which might not be in next.config.ts images.domains. 
-                 I'll use a standard <img /> tag or skip it. Code.html used it. I'll omit it or use a simple placeholder if I don't want to break build. 
-                 Actually, I'll allow googleusercontent.com in next.config or just use <img /> since user asked to match code.html. 
-                 Wait, next/image requires domain config. Static img tag works but warned. I'll use <img /> to avoid config editing overhead unless necessary.
-              */}
-            {/* Replaced img with div to avoid next/image config issues */}
-            <div className="w-24 h-24 absolute -bottom-10 right-0 md:right-20 opacity-20 filter invert hover:opacity-40 transition-opacity animate-bounce bg-[url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtnr_Ba-rw0fct4WQUPJAr8nfqOf7VLU8TabmEmLw1AHUvVYHM7LrEqdW3LKAoG5RT8izgayC-4_YdRgmPstNnR5SU4VMWM1PPLjgFVLDZ_J-jDcuh5-aNFyT0bkYxA9Fim5TrR2oNyEIV06WncDqSw0JELJlEUeeEJnVC4V6yIAnKrjq8rlmQiEj1QVbV75YSR3jP32HL63eBT1jISmhHBvnm8oCPLrjxrJod9_G2HmSNzcrSo81nxIPA2rp0s-SHNBV4ASQ0Usc')] bg-contain bg-no-repeat bg-center"></div>
         </div>
-
       </main>
     </div>
   );
