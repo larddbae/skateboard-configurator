@@ -22,10 +22,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-paper-cream-light min-h-screen relative overflow-x-hidden font-space-mono text-gray-900 leading-relaxed selection:bg-brand-orange selection:text-white">
-      {/* Background Textures */}
-      <div className="fixed inset-0 pointer-events-none opacity-40 z-0 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] mix-blend-multiply"></div>
-      <div className="fixed inset-0 pointer-events-none opacity-20 z-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay"></div>
+    <div className="bg-paper-cream-light bg-texture min-h-screen relative overflow-x-hidden font-space-mono text-gray-900 leading-relaxed selection:bg-brand-orange selection:text-white">
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-24 px-4 overflow-hidden border-b-4 border-black">
@@ -37,15 +36,7 @@ export default function ContactPage() {
                 <h1 className="font-display text-7xl md:text-9xl text-black uppercase tracking-tighter leading-none mb-4 relative z-10 drop-shadow-sketch-white">
                     Get In Touch
                 </h1>
-                <div className="hidden md:block absolute -top-12 -right-12 w-24 h-24 transform rotate-12">
-                     <Image 
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeBdqFaLbx5JYGVIefJA5KX3hrZgiBYPF662hiGHQHCOcUmEavpnIehUSY4AXp8x7Ky1zbSZcWf6KFWvxJy_2eBxb3gA0srXLcGFx_Xl6qu3KXDjSNYR4ATZGiATpEjkpmjhBOxb8g0es3YDBOglWWTpcJJqZN9JLn4g5BqO6PTKrHYY2uZDuDTHqEUrz_7IG2XsCggztL8QBY3vkZq2vaEsDES2x7XIQzY5Hb_aheKJpulDs0hyFfNJMionr-za0BaolqEbFwcNk" 
-                        alt="Skateboard decoration" 
-                        width={100} 
-                        height={100}
-                        className="object-contain"
-                     />
-                </div>
+
                 <div className="absolute -bottom-4 left-0 w-full h-6 bg-brand-lime opacity-60 transform -skew-x-12 -rotate-1 z-0"></div>
             </div>
             <p className="mt-6 text-xl md:text-2xl font-mono text-suburbia-blue max-w-2xl mx-auto bg-white p-2 border-2 border-black transform rotate-1 inline-block shadow-sketch">
@@ -108,9 +99,7 @@ export default function ContactPage() {
                             </div>
                         </button>
                     </form>
-                    <div className="absolute -bottom-10 -right-8 w-24 h-24 bg-brand-lime rounded-full border-4 border-black flex items-center justify-center transform rotate-12 shadow-md z-20 animate-bounce">
-                        <span className="font-marker text-lg text-center leading-tight">Peace<br/>✌️</span>
-                    </div>
+
                 </div>
             </div>
 
