@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function ShippingReturnsPage() {
   return (
-    <div className="bg-suburbia-pink min-h-screen relative overflow-hidden font-space-mono text-gray-900 leading-relaxed">
+    <div className="bg-suburbia-pink min-h-screen relative overflow-hidden font-space-mono text-gray-900 leading-relaxed bg-texture">
       {/* Background Noise & Grain */}
       <div className="fixed inset-0 pointer-events-none opacity-40 z-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-multiply"></div>
       
@@ -21,15 +21,6 @@ export default function ShippingReturnsPage() {
           <h1 className="text-5xl md:text-8xl font-display text-black mb-4 drop-shadow-sketch-lg">
             SHIPPING &<br/><span className="text-brand-orange">RETURNS</span>
           </h1>
-          <div className="absolute -top-10 right-10 md:right-20 animate-bounce hidden md:block rotate-12">
-             <Image 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuACtbtBJYCQmcp1NJbvLsJEINVmm5r_tE7GXwW_XmlQOPaL7BpNOLCDF57DFMAmEwksoYrDNs4acU4x7sJt7LP9cd3v9-1NzzwdDwWZa_JvFChGcohCFbwk6b5Rm2xbhRCf-qgybPtDN2UVr4LkDeQWX7KJLLLO-ss1lfg81XDbkt7PbU6JGX7tBuYfL3uAcr10UhJ6t56ioYvGpVCnHkkmZo5t0YqMRxUo9mVaKi357PKtwjgvdPJvEFLutWs2pLfsT8at5T8GrTE" 
-                alt="Skateboard Character" 
-                width={100} 
-                height={100}
-                className="object-contain"
-             />
-          </div>
           <p className="font-marker text-xl md:text-2xl text-black -rotate-2 inline-block bg-suburbia-lime px-4 py-2 border-2 border-black shadow-sketch transform hover:rotate-0 transition-transform cursor-default">
              Fast shipping. Easy returns. No drama.
           </p>
