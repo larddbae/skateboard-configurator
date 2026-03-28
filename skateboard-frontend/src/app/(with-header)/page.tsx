@@ -28,12 +28,9 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const client = createClient();
-  const page = await client.getSingle("homepage");
-
   return {
-    title: page.data.meta_title,
-    description: page.data.meta_description,
+    title: "Home",
+    description: "Welcome to Victus Skateboard. Design, customize, and build your perfect skateboard from scratch with top-tier streetwear aesthetics.",
   };
 }
 

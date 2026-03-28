@@ -1,4 +1,11 @@
-        import Link from "next/link";
+        import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Custom Builder",
+  description: "Enter the Victus lab. Use our 3D custom builder to assemble your ultimate skateboard setup choosing decks, wheels, and more.",
+};
+
+import Link from "next/link";
 import React from "react";
 
 import { CustomizerControlsProvider } from "./context";

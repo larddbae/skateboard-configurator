@@ -15,35 +15,35 @@ gsap.registerPlugin(useGSAP);
 //   3. The Image component will load it from the public folder
 
 const mockProducts = [
-  { id: 1,  name: "Oni Mask Pro",      category: "Pro Models",  brand: "Suburbia",        price: 59.99,  size: "8.0",   rating: 4.5, reviews: 42,  image: "", badge: "New!",  badgeColor: "bg-primary" },
+  { id: 1,  name: "Oni Mask Pro",      category: "Pro Models",  brand: "Victus",        price: 59.99,  size: "8.0",   rating: 4.5, reviews: 42,  image: "", badge: "New!",  badgeColor: "bg-primary" },
   { id: 2,  name: "Pink Glitch",       category: "Pro Models",  brand: "Alien Workshop",  price: 89.99,  size: "8.125", rating: 5,   reviews: 18,  image: "" },
   { id: 3,  name: "Thank You",         category: "Team Decks",  brand: "Baker",           price: 69.99,  size: "8.0",   rating: 4,   reviews: 5,   image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
-  { id: 4,  name: "Suburbia Yell",     category: "Pro Models",  brand: "Suburbia",        price: 79.99,  size: "8.25",  rating: 5,   reviews: 128, image: "" },
+  { id: 4,  name: "Suburbia Yell",     category: "Pro Models",  brand: "Victus",        price: 79.99,  size: "8.25",  rating: 5,   reviews: 128, image: "" },
   { id: 5,  name: "Azure Deep",        category: "Cruisers",    brand: "Santa Cruz",      price: 64.99,  size: "8.5",   rating: 3.5, reviews: 12,  image: "" },
   { id: 6,  name: "Raw Maple",         category: "Team Decks",  brand: "Baker",           price: 54.99,  size: "8.0",   rating: 4,   reviews: 56,  image: "" },
-  { id: 7,  name: "Ghost Rider",       category: "Pro Models",  brand: "Suburbia",        price: 74.99,  size: "8.0",   rating: 4.5, reviews: 33,  image: "" },
+  { id: 7,  name: "Ghost Rider",       category: "Pro Models",  brand: "Victus",        price: 74.99,  size: "8.0",   rating: 4.5, reviews: 33,  image: "" },
   { id: 8,  name: "Neon Nights",       category: "Pro Models",  brand: "Alien Workshop",  price: 84.99,  size: "8.125", rating: 4,   reviews: 22,  image: "" },
   { id: 9,  name: "Skull Crusher",     category: "Team Decks",  brand: "Baker",           price: 67.99,  size: "8.25",  rating: 4.5, reviews: 45,  image: "" },
   { id: 10, name: "Wave Runner",       category: "Cruisers",    brand: "Santa Cruz",      price: 72.99,  size: "8.5",   rating: 4,   reviews: 38,  image: "" },
   { id: 11, name: "Classic Pool",      category: "Old School",  brand: "Santa Cruz",      price: 62.99,  size: "8.5",   rating: 3.5, reviews: 15,  image: "" },
-  { id: 12, name: "Street Demon",      category: "Pro Models",  brand: "Suburbia",        price: 77.99,  size: "8.0",   rating: 5,   reviews: 67,  image: "" },
+  { id: 12, name: "Street Demon",      category: "Pro Models",  brand: "Victus",        price: 77.99,  size: "8.0",   rating: 5,   reviews: 67,  image: "" },
   { id: 13, name: "Flame Thrower",     category: "Pro Models",  brand: "Baker",           price: 82.99,  size: "8.125", rating: 4.5, reviews: 29,  image: "", badge: "New!",  badgeColor: "bg-primary" },
   { id: 14, name: "Acid Drop",         category: "Team Decks",  brand: "Alien Workshop",  price: 71.99,  size: "7.75",  rating: 4,   reviews: 41,  image: "" },
   { id: 15, name: "Retro Reissue",     category: "Old School",  brand: "Santa Cruz",      price: 69.99,  size: "8.5",   rating: 4.5, reviews: 88,  image: "" },
-  { id: 16, name: "Midnight Cruiser",  category: "Cruisers",    brand: "Suburbia",        price: 66.99,  size: "8.25",  rating: 4,   reviews: 19,  image: "" },
+  { id: 16, name: "Midnight Cruiser",  category: "Cruisers",    brand: "Victus",        price: 66.99,  size: "8.25",  rating: 4,   reviews: 19,  image: "" },
   { id: 17, name: "Tech Slide",        category: "Pro Models",  brand: "Alien Workshop",  price: 91.99,  size: "7.75",  rating: 5,   reviews: 52,  image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
   { id: 18, name: "Dragon Scale",      category: "Team Decks",  brand: "Baker",           price: 73.99,  size: "8.0",   rating: 4.5, reviews: 36,  image: "" },
-  { id: 19, name: "Zen Garden",        category: "Pro Models",  brand: "Suburbia",        price: 85.99,  size: "8.125", rating: 4,   reviews: 11,  image: "" },
+  { id: 19, name: "Zen Garden",        category: "Pro Models",  brand: "Victus",        price: 85.99,  size: "8.125", rating: 4,   reviews: 11,  image: "" },
   { id: 20, name: "Bone Collector",    category: "Old School",  brand: "Santa Cruz",      price: 58.99,  size: "8.38",  rating: 3.5, reviews: 27,  image: "" },
   { id: 21, name: "Cyber Punk",        category: "Pro Models",  brand: "Alien Workshop",  price: 94.99,  size: "8.0",   rating: 5,   reviews: 73,  image: "" },
   { id: 22, name: "Beach Bomb",        category: "Cruisers",    brand: "Santa Cruz",      price: 61.99,  size: "8.5",   rating: 4,   reviews: 44,  image: "" },
   { id: 23, name: "Widow Maker",       category: "Team Decks",  brand: "Baker",           price: 76.99,  size: "8.25",  rating: 4.5, reviews: 31,  image: "" },
-  { id: 24, name: "Solar Flare",       category: "Pro Models",  brand: "Suburbia",        price: 88.99,  size: "7.75",  rating: 5,   reviews: 95,  image: "" },
+  { id: 24, name: "Solar Flare",       category: "Pro Models",  brand: "Victus",        price: 88.99,  size: "7.75",  rating: 5,   reviews: 95,  image: "" },
   { id: 25, name: "Old Faithful",      category: "Old School",  brand: "Baker",           price: 55.99,  size: "8.38",  rating: 4,   reviews: 60,  image: "" },
 ];
 
 const categoryOptions = ["Pro Models", "Team Decks", "Cruisers", "Old School"];
-const brandOptions = ["Suburbia", "Alien Workshop", "Baker", "Santa Cruz"];
+const brandOptions = ["Victus", "Alien Workshop", "Baker", "Santa Cruz"];
 const sizeOptions = ["7.75", "8.0", "8.125", "8.25", "8.38", "8.5"];
 
 const PRODUCTS_PER_PAGE = 12;

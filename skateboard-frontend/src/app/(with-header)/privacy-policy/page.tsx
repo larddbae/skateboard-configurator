@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
 
              <div className="prose prose-lg max-w-none font-space-mono text-gray-800">
                 <p className="text-lg leading-relaxed border-l-4 border-brand-orange pl-6 italic mb-12 bg-orange-50/50 p-4">
-                    Hey skater. At Suburbia, we respect your grind and your data. This document explains what we collect, why we collect it, and how we keep it safe while you&apos;re shredding the streets. No corporate suit talk, just the facts.
+                    Hey skater. At Victus, we respect your grind and your data. This document explains what we collect, why we collect it, and how we keep it safe while you&apos;re shredding the streets. No corporate suit talk, just the facts.
                 </p>
 
                 <div id="section-1" className="mb-16 scroll-mt-32">
@@ -172,7 +172,7 @@ export default function PrivacyPolicyPage() {
 
              <div className="mt-16 pt-8 border-t-2 border-black flex justify-between items-end opacity-70">
                 <div className="font-display text-2xl uppercase">
-                    Suburbia<br/>Skate Co.
+                    Victus<br/>Skateboard Co.
                 </div>
                 <div className="w-24 h-24 border-4 border-brand-orange rounded-full flex items-center justify-center transform -rotate-12 border-dashed">
                     <span className="font-display text-brand-orange text-xl uppercase text-center leading-none">Official<br/>Legal<br/>Doc</span>

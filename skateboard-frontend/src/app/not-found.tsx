@@ -280,7 +280,7 @@ export default function NotFound() {
       {/* ═══ Bottom Corner Branding ═══ */}
       <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-10">
         <span className="font-space-mono text-white/30 text-[10px] sm:text-xs uppercase tracking-[0.3em]">
-          Suburbia Skate // 404
+          Victus Skateboard // 404
         </span>
       </div>
       <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-10">

@@ -100,8 +100,21 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Suburbia Skate - Build Your Custom Skateboard",
-  description: "Build your custom skateboard with AI-powered recommendations. Escape the cul-de-sac and shred the world.",
+  title: {
+    template: "%s | Victus Skateboard",
+    default: "Victus Skateboard - Premium Custom Boards",
+  },
+  description: "Build your dream customized skateboard with Victus. Choose your deck, trucks, and wheels with our interactive 3D builder.",
+  openGraph: {
+    title: "Victus Skateboard",
+    description: "Design your custom board today.",
+    images: [{
+      url: "/placeholder-logo.jpg", // TODO: Update with real logo later
+      width: 1200,
+      height: 630,
+      alt: "Victus Skateboard Preview",
+    }],
+  },
 };
 
 export default function RootLayout({

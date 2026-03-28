@@ -110,7 +110,7 @@ const skaters: Skater[] = [
 
 const videos: Video[] = [
   {
-    title: "Suburbia Tour: Tokyo Nights",
+    title: "Victus Tour: Tokyo Nights",
     subtitle: "Full Team • 2 Weeks ago",
     youtubeId: "VIDEO_ID_1",
     thumbnail: "/images/team/hero-bg.jpg",
@@ -352,7 +352,7 @@ export default function TeamPage() {
               <br />
               <br />
               Each member brings their own unique style — no two runs are the same.
-              That&apos;s what makes Suburbia Skate special.
+              That&apos;s what makes Victus Skateboard special.
             </p>
           </div>
 

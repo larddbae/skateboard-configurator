@@ -127,7 +127,7 @@ export default function TermsPage() {
                     <span className="absolute bottom-1 left-0 w-full h-2 bg-[#a63300] opacity-30 -rotate-1"></span>
                   </h3>
                   <div className="space-y-4 text-lg leading-relaxed font-space-grotesk">
-                    <p><span className="font-bold">1.1</span> Welcome to Suburbia Skate. This website is operated by Radical Legal Services LLC. Throughout the site, the terms &ldquo;we&rdquo;, &ldquo;us&rdquo; and &ldquo;our&rdquo; refer to Suburbia Skate.</p>
+                    <p><span className="font-bold">1.1</span> Welcome to Victus Skateboard. This website is operated by Radical Legal Services LLC. Throughout the site, the terms &ldquo;we&rdquo;, &ldquo;us&rdquo; and &ldquo;our&rdquo; refer to Victus Skateboard.</p>
                     <p><span className="font-bold">1.2</span> By visiting our site and/ or purchasing something from us, you engage in our &ldquo;Service&rdquo; and agree to be bound by the following terms and conditions.</p>
                     <p><span className="font-bold">1.3</span> Please read these Terms of Service carefully before accessing or using our website. By accessing or using any part of the site, you agree to be bound by these Terms of Service.</p>
                   </div>
@@ -151,7 +151,7 @@ export default function TermsPage() {
                   </h3>
                   <div className="space-y-4 text-lg leading-relaxed font-space-grotesk">
                     <p><span className="font-bold">3.1</span> If you create an account, you are responsible for maintaining the security of your account and you are fully responsible for all activities that occur under the account.</p>
-                    <p><span className="font-bold">3.2</span> You must immediately notify Suburbia Skate of any unauthorized uses of your account or any other breaches of security.</p>
+                    <p><span className="font-bold">3.2</span> You must immediately notify Victus Skateboard of any unauthorized uses of your account or any other breaches of security.</p>
                   </div>
                 </section>
 

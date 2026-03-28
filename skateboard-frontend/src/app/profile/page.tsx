@@ -179,7 +179,7 @@ export default function ProfilePage() {
                     <span className="material-symbols-outlined text-3xl">skateboarding</span>
                 </div>
                 <div className="leading-none">
-                    <h1 className="font-display text-3xl uppercase tracking-tighter text-ink -rotate-2">Suburbia</h1>
+                    <h1 className="font-display text-3xl uppercase tracking-tighter text-ink -rotate-2">Victus</h1>
                     <span className="font-hand text-sm font-bold text-primary block ml-1">Zine Issue #4</span>
                 </div>
             </div>

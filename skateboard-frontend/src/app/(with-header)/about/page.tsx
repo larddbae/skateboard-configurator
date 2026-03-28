@@ -281,7 +281,7 @@ export default function AboutPage() {
                   say anything about who we were.
                 </p>
                 <p>
-                  Suburbia Skate was born in a dusty garage in 2024, fueled by
+                  Victus Skateboard was born in a dusty garage in 2024, fueled by
                   stale pizza and a desire to disrupt the concrete jungle. We
                   believe every skater deserves a board that screams their
                   identity before their wheels even hit the pavement.

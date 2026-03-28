@@ -39,7 +39,7 @@ const product = {
     name: "@alienz",
     realName: "Alex \"Alienz\" Rivera",
     avatar: "/images/products/artist-avatar.jpg",
-    bio: "Born and raised in East LA, Alex has been creating art inspired by street culture and sci-fi since the age of 14. His unique style blends geometric precision with organic, otherworldly forms — earning him the nickname \"Alienz\" in the local skate scene. He's collaborated with brands like Thrasher, Vans, and now Suburbia to bring his vision to the board.",
+    bio: "Born and raised in East LA, Alex has been creating art inspired by street culture and sci-fi since the age of 14. His unique style blends geometric precision with organic, otherworldly forms — earning him the nickname \"Alienz\" in the local skate scene. He's collaborated with brands like Thrasher, Vans, and now Victus to bring his vision to the board.",
     style: "Geometric / Alien Surrealism",
     location: "Los Angeles, CA",
     socials: {
@@ -539,7 +539,7 @@ export default function ProductDetailPage() {
                   />
                 </div>
                 <p className="mt-4 font-mono text-xs text-gray-400 text-center">
-                  Video by Suburbia Skate Media · Published Jan 2026
+                  Video by Victus Skate Media · Published Jan 2026
                 </p>
               </div>
             )}
