@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import Image from "next/image";
 import gsap from "gsap";
+import { toast } from "react-hot-toast";
 
 /* ============================================================
    Confetti helper — Adapted from party-checkboxes template
@@ -347,9 +348,12 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
+      toast.success("Login successful! Welcome back.");
       router.push("/build");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

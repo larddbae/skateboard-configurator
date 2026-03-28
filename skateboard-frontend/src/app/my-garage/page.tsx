@@ -8,6 +8,7 @@ import { fetchDesigns, deleteDesign } from "@/lib/api";
 import { SavedDesign } from "@/lib/types";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
+import { toast } from "react-hot-toast";
 
 export default function MyGaragePage() {
   const router = useRouter();
@@ -54,9 +55,10 @@ export default function MyGaragePage() {
     try {
       await deleteDesign(selectedDesignToDelete.id);
       setDesigns(designs.filter((d) => d.id !== selectedDesignToDelete.id));
+      toast.success("Design deleted from garage");
     } catch (error) {
       console.error("Failed to delete design:", error);
-      alert("Failed to delete design");
+      toast.error("Failed to delete design");
     } finally {
       setDeletingId(null);
       setSelectedDesignToDelete(null);

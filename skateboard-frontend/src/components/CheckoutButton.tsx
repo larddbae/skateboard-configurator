@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCustomizerControls } from "@/app/build/context";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function CheckoutButton() {
   const router = useRouter();
@@ -22,7 +23,9 @@ export default function CheckoutButton() {
 
   const handleCheckout = () => {
     if (!selectedDeck || !selectedWheel || !selectedTruck || !selectedBolt) {
-      setError("Please configure all parts first");
+      const msg = "Please configure all parts first";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 

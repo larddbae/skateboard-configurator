@@ -6,6 +6,7 @@ import { useCustomizerControls } from "@/app/build/context";
 import { saveDesign } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { toast } from "react-hot-toast";
 
 export default function SaveDesignButton() {
   const router = useRouter();
@@ -16,11 +17,12 @@ export default function SaveDesignButton() {
   const [designName, setDesignName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
-  const [showToast, setShowToast] = useState(false);
 
   const handleSave = async () => {
     if (!designName.trim()) {
-      setError("Please enter a design name");
+      const msg = "Please enter a design name";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -29,7 +31,9 @@ export default function SaveDesignButton() {
 
     try {
       if (!selectedDeck || !selectedWheel || !selectedTruck || !selectedBolt) {
-        setError("Please configure all parts first");
+        const msg = "Please configure all parts first";
+        setError(msg);
+        toast.error(msg);
         return;
       }
       await saveDesign(designName, {
@@ -41,10 +45,11 @@ export default function SaveDesignButton() {
       
       setIsOpen(false);
       setDesignName("");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      toast.success("Design saved successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save design");
+      const errorMessage = err instanceof Error ? err.message : "Failed to save design";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -132,16 +137,6 @@ export default function SaveDesignButton() {
                 {isSaving ? "Saving..." : "Save Design"}
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Custom Toast Notification */}
-      {showToast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[100] animate-fade-in pointer-events-none">
-          <div className="bg-purple-500 border-4 border-black px-6 py-3 text-white font-black text-xl shadow-[8px_8px_0px_rgba(0,0,0,1)] transform -rotate-2 flex items-center gap-3 uppercase tracking-wider">
-            <span className="material-symbols-outlined text-[24px]">verified</span>
-            Design saved successfully!
           </div>
         </div>
       )}

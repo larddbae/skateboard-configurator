@@ -6,6 +6,7 @@ import { SVGFilters } from "@/components/SVGFilters";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { CartSidebar } from "@/components/CartSidebar";
+import { Toaster } from "react-hot-toast";
 
 const bowlby = Bowlby_One_SC({
   subsets: ["latin"],
@@ -128,6 +129,32 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         <SVGFilters />
+        <Toaster 
+          position="bottom-right" 
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#18181b', // zinc-900
+              color: '#f4f4f5', // zinc-100
+              border: '1px solid #3f3f46', // zinc-700
+              borderRadius: '0px', // streetwear aesthetic
+              fontFamily: 'var(--font-roboto)', // Monospace font
+              boxShadow: '4px 4px 0px rgba(0,0,0,1)', // brutalist shadow
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981', // emerald-500
+                secondary: '#18181b',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444', // red-500
+                secondary: '#18181b',
+              },
+            },
+          }} 
+        />
       </body>
     </html>
   );

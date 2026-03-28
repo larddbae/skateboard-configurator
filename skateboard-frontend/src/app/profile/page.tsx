@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import * as api from "@/lib/api";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 // Strip /api suffix to get server base URL for storage/assets
@@ -37,7 +38,6 @@ export default function ProfilePage() {
 
   // UI states
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Initialize form from user data
   useEffect(() => {
@@ -72,7 +72,6 @@ export default function ProfilePage() {
       setConfirmPassword("");
       setAvatarFile(null);
       setAvatarPreview(null);
-      setSaveMessage(null);
     }
   };
 
@@ -105,7 +104,6 @@ export default function ProfilePage() {
   // Handle save all changes
   const handleSave = async () => {
     setSaving(true);
-    setSaveMessage(null);
 
     try {
       // 1. Update profile info
@@ -124,7 +122,7 @@ export default function ProfilePage() {
       // 3. Update password if filled
       if (currentPassword && newPassword) {
         if (newPassword !== confirmPassword) {
-          setSaveMessage({ type: 'error', text: 'New password and confirmation do not match!' });
+          toast.error('New password and confirmation do not match!');
           setSaving(false);
           return;
         }
@@ -147,10 +145,10 @@ export default function ProfilePage() {
       setAvatarFile(null);
       setAvatarPreview(null);
 
-      setSaveMessage({ type: 'success', text: 'All changes saved successfully! 🛹' });
+      toast.success('All changes saved successfully! 🛹');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-      setSaveMessage({ type: 'error', text: errorMessage });
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -235,13 +233,6 @@ export default function ProfilePage() {
                     <p className="text-ink font-mono text-sm bg-white inline-block px-2 py-1 border border-ink rotate-1">Manage your account details and stuff.</p>
                 </div>
             </header>
-
-            {/* Save message feedback */}
-            {saveMessage && (
-                <div className={`mb-6 px-4 py-3 border-2 border-ink font-mono text-sm ${saveMessage.type === 'success' ? 'bg-secondary/30 text-ink' : 'bg-red-100 text-red-700'}`}>
-                    {saveMessage.text}
-                </div>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-20">
                 {/* Profile Card Col */}

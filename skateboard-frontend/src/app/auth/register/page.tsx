@@ -7,6 +7,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import gsap from "gsap";
 import RotatingText from "@/components/RotatingText";
+import { toast } from "react-hot-toast";
 
 /* ============================================================
    SupahBlob — Adapted from morphing-blob-image template
@@ -209,12 +210,16 @@ export default function RegisterPage() {
     setError("");
 
     if (password !== passwordConfirmation) {
-      setError("Passwords do not match");
+      const msg = "Passwords do not match";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (!agreedToTerms) {
-      setError("Please agree to the terms and conditions");
+      const msg = "Please agree to the terms and conditions";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -222,9 +227,12 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password, passwordConfirmation);
+      toast.success("Welcome! Account created successfully.");
       router.push("/build");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      const errorMessage = err instanceof Error ? err.message : "Registration failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

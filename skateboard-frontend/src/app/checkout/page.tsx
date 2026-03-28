@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchParts } from "@/lib/api";
+import { toast } from "react-hot-toast";
 
 function CheckoutContent() {
   const { items: cartItems, subtotal: cartSubtotal, clearCart } = useCart();
@@ -48,10 +49,13 @@ function CheckoutContent() {
   const total = subtotal + shippingCost + taxes;
 
   const handleContinue = () => {
-    if (step === "shipping") setStep("payment");
-    else if (step === "payment") {
+    if (step === "shipping") {
+       setStep("payment");
+       toast.success("Shipping information saved!");
+    } else if (step === "payment") {
        // Complete Order Logic
        // In real app, await payment processing here
+       toast.success("Order processed successfully!");
        clearCart();
        router.push("/orders?success=true");
     }
@@ -271,7 +275,7 @@ function CheckoutContent() {
               <div className="mt-6">
                 <div className="flex gap-2">
                   <input className="flex-1 bg-transparent border-b-2 border-white/50 text-white placeholder-white/70 p-2 focus:outline-none focus:border-brand-orange font-mono text-sm" placeholder="Gift card or discount code" type="text"/>
-                  <button className="bg-black text-white px-4 py-2 font-bold uppercase text-sm border border-white/30 hover:bg-brand-orange hover:text-black transition-colors">Apply</button>
+                  <button onClick={() => toast.error("Invalid Promo Code")} className="bg-black text-white px-4 py-2 font-bold uppercase text-sm border border-white/30 hover:bg-brand-orange hover:text-black transition-colors">Apply</button>
                 </div>
               </div>
             </div>
