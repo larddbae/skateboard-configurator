@@ -1,81 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { Part } from "@/lib/types";
+import { fetchPartById, fetchPartsByCategory } from "@/lib/api";
 
-// Mock Data for this specific product
-// To use your own images:
-//   1. Place images in /public/images/products/ (e.g. ghost-ride-1.jpg)
-//   2. The paths below already point to /images/products/...
-//   3. The Image component will load them from the public folder
-const product = {
-  id: "1",
-  name: "The Ghost Ride Pro",
-  subtitle: "Pro Model",
-  price: 74.99,
-  rating: 4.5,
-  reviews: 42,
-  description:
-    "Not just a board, that's as real as the places you take it. Featuring our signature \"Pop-Forever\" maple construction. Designed to handle the grittiest street spots and the smoothest bowls.",
-  images: [
-    "/images/products/ghost-ride-1.jpg",
-    "/images/products/ghost-ride-2.jpg",
-    "/images/products/ghost-ride-3.jpg",
-    "/images/products/ghost-ride-4.jpg",
-    "/images/products/ghost-ride-5.jpg",
-  ],
-  specs: [
-    { label: "Concave", value: "Medium Steep" },
-    { label: "Construction", value: "7-Ply Canadian Maple" },
-    { label: "Wheelbase", value: "14.25\"" },
-    { label: "Nose", value: "7.0\"" },
-    { label: "Tail", value: "6.625\"" },
-  ],
-  shapeDesc: "The 'Ghost Ride' shape is built for technical street skating. The slightly steeper concave gives you that extra snap on your ollies, while the tapered nose helps with quick flip tricks. It's a classic popsicle shape refined for the modern era.",
-  tags: ["#Street", "#Tech", "#Park"],
-  artistBio: {
-    name: "@alienz",
-    realName: "Alex \"Alienz\" Rivera",
-    avatar: "/images/products/artist-avatar.jpg",
-    bio: "Born and raised in East LA, Alex has been creating art inspired by street culture and sci-fi since the age of 14. His unique style blends geometric precision with organic, otherworldly forms — earning him the nickname \"Alienz\" in the local skate scene. He's collaborated with brands like Thrasher, Vans, and now Victus to bring his vision to the board.",
-    style: "Geometric / Alien Surrealism",
-    location: "Los Angeles, CA",
-    socials: {
-      instagram: "@alienz.art",
-      website: "alienz-art.com",
-    },
-  },
-};
-
-const relatedProducts = [
-  {
-    id: 101,
-    name: "Demon Slayer 8.0\"",
-    price: 59.99,
-    image: "/images/products/demon-slayer.jpg"
-  },
-  {
-    id: 102,
-    name: "Pink Fury 8.25\"",
-    price: 89.99,
-    image: "/images/products/pink-fury.jpg",
-    badge: "HOT"
-  },
-  {
-    id: 103,
-    name: "Thank You Repeat",
-    price: 69.99,
-    image: "/images/products/thank-you-repeat.jpg"
-  },
-  {
-    id: 104,
-    name: "Yellow Haze 8.5\"",
-    price: 79.99,
-    image: "/images/products/yellow-haze.jpg"
-  }
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const SERVER_BASE_URL = API_URL.replace(/\/api\/?$/, "");
 
 // Size Guide Data
 const sizeGuideData = [
@@ -86,14 +21,145 @@ const sizeGuideData = [
   { width: "8.5\" +", height: "6'0\" +", shoeSize: "11+ US", style: "Pool / Cruising" },
 ];
 
+// Category labels
+const categoryLabels: Record<string, string> = {
+  deck: "Deck",
+  wheel: "Wheel",
+  truck: "Truck",
+  bolt: "Bolt",
+};
+
+// Artist Bio (static for now — will be dynamic in the future)
+const artistBio = {
+  name: "@alienz",
+  realName: "Alex \"Alienz\" Rivera",
+  avatar: "/images/products/artist-avatar.jpg",
+  bio: "Born and raised in East LA, Alex has been creating art inspired by street culture and sci-fi since the age of 14. His unique style blends geometric precision with organic, otherworldly forms — earning him the nickname \"Alienz\" in the local skate scene. He's collaborated with brands like Thrasher, Vans, and now Victus to bring his vision to the board.",
+  style: "Geometric / Alien Surrealism",
+  location: "Los Angeles, CA",
+  socials: {
+    instagram: "@alienz.art",
+    website: "alienz-art.com",
+  },
+};
+
+function getImageUrl(part: Part): string {
+  if (part.texture_url) {
+    if (part.texture_url.startsWith("/storage/")) {
+      return `${SERVER_BASE_URL}${part.texture_url}`;
+    }
+    return part.texture_url;
+  }
+  return "";
+}
+
+// ─── Loading Skeleton for Product Detail ────────────────────────────────────
+
+function ProductDetailSkeleton() {
+  return (
+    <div className="bg-background-light text-gray-900 min-h-screen relative overflow-x-hidden bg-texture animate-pulse">
+      <main className="relative z-10 pt-12 pb-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Breadcrumb skeleton */}
+          <div className="flex gap-2 mb-8">
+            <div className="h-4 bg-gray-200 rounded w-12"></div>
+            <div className="h-4 bg-gray-200 rounded w-12"></div>
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+          </div>
+
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-start">
+            {/* Left: image skeleton */}
+            <div className="flex flex-col gap-6">
+              <div className="bg-white rough-border p-8 shadow-brutal-lg">
+                <div className="w-full h-[600px] bg-gray-200"></div>
+              </div>
+            </div>
+
+            {/* Right: details skeleton */}
+            <div className="mt-10 lg:mt-0 space-y-6">
+              <div className="h-6 bg-gray-200 rounded w-24"></div>
+              <div className="h-16 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-8 bg-gray-200 rounded w-20"></div>
+              <div className="h-20 bg-gray-200 rounded w-full"></div>
+              <div className="grid grid-cols-4 gap-3">
+                {[1, 2, 3, 4].map(i => <div key={i} className="h-10 bg-gray-200 rounded"></div>)}
+              </div>
+              <div className="h-14 bg-gray-200 rounded w-full"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function ProductDetailPage() {
-  const [selectedImage, setSelectedImage] = useState(0);
+  const params = useParams();
+  const router = useRouter();
+  const productId = params.id as string;
+
+  const [product, setProduct] = useState<Part | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Part[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   const [selectedSize, setSelectedSize] = useState("8.0\"");
   const [gripTape, setGripTape] = useState("free");
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"specs" | "artist" | "video">("specs");
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+
+  // Fetch product data
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        setIsLoading(true);
+        setError(false);
+        const part = await fetchPartById(Number(productId));
+        setProduct(part);
+
+        // Fetch related products (same category, exclude current)
+        const related = await fetchPartsByCategory(part.category);
+        setRelatedProducts(related.filter(p => p.id !== part.id).slice(0, 4));
+      } catch {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    if (productId) {
+      loadProduct();
+    }
+  }, [productId]);
+
+  // Handle add to cart with auth check
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+      return;
+    }
+
+    const imageUrl = getImageUrl(product);
+    addToCart({
+      id: String(product.id),
+      name: product.name,
+      price: Number(product.price),
+      image: imageUrl,
+      size: selectedSize,
+      gripTape: gripTape,
+    });
+  };
+
+  if (isLoading) return <ProductDetailSkeleton />;
+  if (error || !product) {
+    notFound();
+  }
+
+  const productImageUrl = getImageUrl(product);
+  const images = productImageUrl ? [productImageUrl] : [];
 
   return (
     <div className="bg-background-light text-gray-900 min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white bg-texture">
@@ -187,54 +253,6 @@ export default function ProductDetailPage() {
           </div>
         </div>
       )}
-      {/* ══════════ Image Gallery Lightbox ══════════ */}
-      {lightboxOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <button
-            onClick={() => setLightboxOpen(false)}
-            className="absolute top-6 right-6 text-white hover:text-primary transition-colors z-50 p-2 border-2 border-transparent hover:border-white rounded-full flex items-center justify-center"
-          >
-            <span className="material-icons text-4xl">close</span>
-          </button>
-          
-          <div className="relative w-full max-w-5xl h-[80vh] flex items-center justify-center">
-             <Image
-              src={product.images[selectedImage]}
-              alt="Gallery Image"
-              fill
-              className="object-contain"
-              unoptimized
-             />
-             
-             {/* Nav buttons */}
-             <button
-               onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev > 0 ? prev - 1 : product.images.length - 1)); }}
-               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 md:p-4 shadow-hard hover:bg-primary hover:scale-110 transition-all flex items-center justify-center border-4 border-black"
-             >
-               <span className="material-icons text-xl md:text-2xl ml-[-2px]">arrow_back_ios_new</span>
-             </button>
-             <button
-               onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev < product.images.length - 1 ? prev + 1 : 0)); }}
-               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-black p-3 md:p-4 shadow-hard hover:bg-primary hover:scale-110 transition-all flex items-center justify-center border-4 border-black"
-             >
-               <span className="material-icons text-xl md:text-2xl mr-[-2px]">arrow_forward_ios</span>
-             </button>
-          </div>
-          
-          {/* Thumbnails row */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 px-4 max-w-full overflow-x-auto pb-4">
-             {product.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`relative w-20 h-20 flex-shrink-0 transition-all bg-white ${selectedImage === idx ? 'border-4 border-primary scale-110 z-10 shadow-brutal' : 'border-2 border-black opacity-60 hover:opacity-100'}`}
-                >
-                  <Image src={img} alt={`Thumb ${idx+1}`} fill className="object-cover" unoptimized />
-                </button>
-             ))}
-          </div>
-        </div>
-      )}
 
       <main className="relative z-10 pt-12 pb-24">
          {/* Background Text Overlay */}
@@ -248,7 +266,7 @@ export default function ProductDetailPage() {
             <ol className="flex items-center space-x-2">
               <li><Link href="/" className="hover:text-black border-b border-transparent hover:border-black">Home</Link></li>
               <li>/</li>
-              <li><Link href="/shop" className="hover:text-black border-b border-transparent hover:border-black">Decks</Link></li>
+              <li><Link href="/shop" className="hover:text-black border-b border-transparent hover:border-black">Shop</Link></li>
               <li>/</li>
               <li className="text-black">{product.name}</li>
             </ol>
@@ -258,41 +276,32 @@ export default function ProductDetailPage() {
             {/* Left Column: Gallery */}
             <div className="flex flex-col gap-6 relative">
               <div className="relative bg-white rough-border p-8 shadow-brutal-lg group overflow-hidden">
-                <div className="absolute top-4 right-4 z-20">
-                  <span className="bg-yellow-400 text-black font-marker px-3 py-1 text-lg transform rotate-6 inline-block shadow-sm">Best Seller!</span>
-                </div>
-                <div className="relative w-full h-[600px] bg-gray-100 flex items-center justify-center">
-                   <Image
-                    src={product.images[selectedImage]}
-                    alt="Main Product Image"
-                    fill
-                    className="object-contain transform group-hover:scale-105 transition-transform duration-500"
-                    unoptimized
-                   />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-4">
-                {product.images.slice(1, 4).map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedImage(idx + 1)}
-                    className={`rough-border-sm bg-white p-2 hover:bg-gray-100 transition relative h-24 shadow-sm hover:shadow-hard-hover hover:-translate-y-1 ${selectedImage === idx + 1 ? 'border-4 border-black ring-0' : 'border-2 border-black opacity-80 hover:opacity-100'}`}
-                  >
-                    <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain" unoptimized />
-                  </button>
-                ))}
-                {product.images.length > 4 && (
-                  <button
-                     onClick={() => { setLightboxOpen(true); setSelectedImage(4); }}
-                     className={`rough-border-sm bg-white p-2 transition relative h-24 overflow-hidden border-2 border-black shadow-sm group hover:shadow-hard-hover hover:-translate-y-1`}
-                   >
-                      <Image src={product.images[4]} alt="Lifestyle View" fill className="object-cover group-hover:scale-110 transition-transform duration-500" unoptimized />
-                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white font-anton text-2xl group-hover:bg-primary/80 transition-colors">
-                       +{product.images.length - 4}
-                     </div>
-                   </button>
+                {product.stock <= 5 && product.stock > 0 && (
+                  <div className="absolute top-4 right-4 z-20">
+                    <span className="bg-yellow-400 text-black font-marker px-3 py-1 text-lg transform rotate-6 inline-block shadow-sm">Low Stock!</span>
+                  </div>
                 )}
+                {product.stock > 5 && (
+                  <div className="absolute top-4 right-4 z-20">
+                    <span className="bg-yellow-400 text-black font-marker px-3 py-1 text-lg transform rotate-6 inline-block shadow-sm">In Stock</span>
+                  </div>
+                )}
+                <div className="relative w-full h-[600px] bg-gray-100 flex items-center justify-center">
+                  {productImageUrl ? (
+                    <Image
+                      src={productImageUrl}
+                      alt={product.name}
+                      fill
+                      className="object-contain transform group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-zinc-400 gap-4">
+                      <span className="material-icons text-[8rem]">skateboarding</span>
+                      <span className="font-mono text-base uppercase tracking-wider">No Image Available</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -303,21 +312,22 @@ export default function ProductDetailPage() {
 
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="inline-block px-2 py-1 bg-black text-white text-xs font-mono uppercase tracking-widest transform -rotate-1">{product.subtitle}</span>
+                  <span className="inline-block px-2 py-1 bg-black text-white text-xs font-mono uppercase tracking-widest transform -rotate-1">{categoryLabels[product.category] || product.category}</span>
                 </div>
                 <h1 className="text-5xl sm:text-7xl font-anton uppercase text-black tracking-tight leading-[0.85] mb-4">
-                  The Ghost <br/>Ride <span className="text-primary grunge-text">Pro</span>
+                  {product.name}
                 </h1>
                 <div className="flex items-center gap-4 mb-6">
-                  <p className="text-3xl font-mono font-bold text-gray-900">${product.price}</p>
-                  <div className="flex items-center gap-1">
-                    {[1,2,3,4].map(s => <span key={s} className="material-icons text-yellow-500 text-xl">star</span>)}
-                    <span className="material-icons text-yellow-500 text-xl">star_half</span>
-                    <span className="text-sm font-bold ml-2 underline decoration-wavy decoration-gray-400 text-gray-600 cursor-pointer">{product.reviews} Reviews</span>
+                  <p className="text-3xl font-mono font-bold text-gray-900">${Number(product.price).toFixed(2)}</p>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${product.stock > 0 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                    <span className="text-sm font-mono text-gray-600">
+                      {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                    </span>
                   </div>
                 </div>
                 <p className="font-mono text-gray-700 leading-relaxed mb-8 border-l-4 border-brand-pink pl-4">
-                  {product.description}
+                  {product.description || "Premium skateboard component, built for performance and durability."}
                 </p>
               </div>
 
@@ -368,20 +378,26 @@ export default function ProductDetailPage() {
                 {/* Add to Cart Actions */}
                 <div className="flex flex-col gap-4 pt-4">
                   <button 
-                    onClick={() => addToCart({
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      image: product.images[selectedImage],
-                      size: selectedSize,
-                      gripTape: gripTape
-                    })}
-                    className="w-full bg-primary hover:bg-orange-600 text-black font-anton uppercase text-3xl py-4 px-8 shadow-brutal hover:shadow-none hover:translate-y-1 hover:translate-x-1 transition-all torn-paper border-2 border-black flex items-center justify-center"
+                    onClick={handleAddToCart}
+                    disabled={product.stock === 0}
+                    className={`w-full font-anton uppercase text-3xl py-4 px-8 shadow-brutal hover:shadow-none hover:translate-y-1 hover:translate-x-1 transition-all torn-paper border-2 border-black flex items-center justify-center ${
+                      product.stock === 0
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-primary hover:bg-orange-600 text-black"
+                    }`}
                   >
                      Add To Cart <span className="material-icons align-middle ml-2 text-3xl">skateboarding</span>
                   </button>
                   <p className="text-center font-mono text-xs text-gray-500 flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> In stock and ready to rip. Ships tomorrow.
+                    {product.stock > 0 ? (
+                      <>
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> In stock and ready to rip. Ships tomorrow.
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 bg-red-500 rounded-full"></span> Currently out of stock.
+                      </>
+                    )}
                   </p>
                 </div>
 
@@ -397,8 +413,8 @@ export default function ProductDetailPage() {
                   <div className="flex items-start gap-3 p-3 bg-white rough-border-sm">
                     <span className="material-icons text-2xl text-secondary">verified</span>
                     <div>
-                      <h4 className="font-bold font-bebas text-lg">Quality Wood</h4>
-                      <p className="text-xs text-gray-500 font-mono">100% Canadian Maple</p>
+                      <h4 className="font-bold font-bebas text-lg">Quality Parts</h4>
+                      <p className="text-xs text-gray-500 font-mono">Premium components</p>
                     </div>
                   </div>
                 </div>
@@ -443,20 +459,57 @@ export default function ProductDetailPage() {
                  </div>
                  <div className="grid md:grid-cols-2 gap-8">
                    <ul className="space-y-4 font-mono text-sm">
-                     {product.specs.map((spec, idx) => (
-                       <li key={idx} className="flex justify-between border-b border-dashed border-gray-300 pb-2">
-                         <span className="font-bold">{spec.label}:</span>
-                         <span>{spec.value}</span>
-                       </li>
-                     ))}
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Category:</span>
+                       <span>{categoryLabels[product.category] || product.category}</span>
+                     </li>
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Weight:</span>
+                       <span>{product.weight} kg</span>
+                     </li>
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Durability:</span>
+                       <span>{product.durability}/100</span>
+                     </li>
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Speed:</span>
+                       <span>{product.speed}/100</span>
+                     </li>
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Pop:</span>
+                       <span>{product.pop}/100</span>
+                     </li>
+                     <li className="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                       <span className="font-bold">Stock:</span>
+                       <span>{product.stock} units</span>
+                     </li>
                    </ul>
                    <div className="relative">
-                     <h4 className="font-marker text-xl mb-4 transform -rotate-2 text-primary">Why this shape?</h4>
-                     <p className="font-sans text-gray-600 leading-relaxed">{product.shapeDesc}</p>
-                     <div className="mt-4 flex gap-2">
-                       {product.tags.map(tag => (
-                         <span key={tag} className="px-2 py-1 bg-gray-200 text-xs font-bold font-mono rounded">{tag}</span>
+                     <h4 className="font-marker text-xl mb-4 transform -rotate-2 text-primary">Performance Stats</h4>
+                     {/* Stats Bars */}
+                     <div className="space-y-4">
+                       {[
+                         { label: "Durability", value: product.durability },
+                         { label: "Speed", value: product.speed },
+                         { label: "Pop", value: product.pop },
+                       ].map((stat) => (
+                         <div key={stat.label}>
+                           <div className="flex justify-between font-mono text-sm mb-1">
+                             <span className="font-bold">{stat.label}</span>
+                             <span>{stat.value}%</span>
+                           </div>
+                           <div className="w-full bg-gray-200 h-3 border border-black">
+                             <div
+                               className="h-full bg-primary transition-all duration-500"
+                               style={{ width: `${stat.value}%` }}
+                             ></div>
+                           </div>
+                         </div>
                        ))}
+                     </div>
+                     <div className="mt-4 flex gap-2">
+                       <span className="px-2 py-1 bg-gray-200 text-xs font-bold font-mono rounded">#{product.category}</span>
+                       {product.stock > 0 && <span className="px-2 py-1 bg-gray-200 text-xs font-bold font-mono rounded">#InStock</span>}
                      </div>
                    </div>
                  </div>
@@ -474,46 +527,46 @@ export default function ProductDetailPage() {
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-36 h-36 relative rounded-full overflow-hidden rough-border-sm bg-gray-100">
                       <Image
-                        src={product.artistBio.avatar}
-                        alt={product.artistBio.realName}
+                        src={artistBio.avatar}
+                        alt={artistBio.realName}
                         fill
                         className="object-cover"
                         unoptimized
                       />
                     </div>
-                    <span className="font-marker text-primary text-lg">{product.artistBio.name}</span>
+                    <span className="font-marker text-primary text-lg">{artistBio.name}</span>
                   </div>
 
                   {/* Bio Content */}
                   <div>
-                    <h3 className="font-anton text-3xl uppercase mb-1">{product.artistBio.realName}</h3>
+                    <h3 className="font-anton text-3xl uppercase mb-1">{artistBio.realName}</h3>
                     <div className="flex flex-wrap gap-3 mb-4">
                       <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                        🎨 {product.artistBio.style}
+                        🎨 {artistBio.style}
                       </span>
                       <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                        📍 {product.artistBio.location}
+                        📍 {artistBio.location}
                       </span>
                     </div>
-                    <p className="font-sans text-gray-600 leading-relaxed mb-6">{product.artistBio.bio}</p>
+                    <p className="font-sans text-gray-600 leading-relaxed mb-6">{artistBio.bio}</p>
                     <div className="flex gap-4 border-t border-dashed border-gray-300 pt-4">
                       <a
-                        href={`https://instagram.com/${product.artistBio.socials.instagram.replace("@", "")}`}
+                        href={`https://instagram.com/${artistBio.socials.instagram.replace("@", "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 font-mono text-sm font-bold hover:text-primary transition-colors group"
                       >
                         <span className="material-icons text-lg group-hover:scale-110 transition-transform">camera_alt</span>
-                        {product.artistBio.socials.instagram}
+                        {artistBio.socials.instagram}
                       </a>
                       <a
-                        href={`https://${product.artistBio.socials.website}`}
+                        href={`https://${artistBio.socials.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 font-mono text-sm font-bold hover:text-primary transition-colors group"
                       >
                         <span className="material-icons text-lg group-hover:scale-110 transition-transform">language</span>
-                        {product.artistBio.socials.website}
+                        {artistBio.socials.website}
                       </a>
                     </div>
                   </div>
@@ -527,13 +580,13 @@ export default function ProductDetailPage() {
                 <div className="absolute -left-4 -top-4 w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-black border-2 border-black shadow-sm z-20">
                   <span className="material-icons">play_arrow</span>
                 </div>
-                <h3 className="font-anton text-2xl uppercase mb-4">Board Review — The Ghost Ride Pro</h3>
-                <p className="font-mono text-sm text-gray-500 mb-6">Watch our team rider break down the Ghost Ride Pro — from first impressions to kickflip tests.</p>
+                <h3 className="font-anton text-2xl uppercase mb-4">Board Review — {product.name}</h3>
+                <p className="font-mono text-sm text-gray-500 mb-6">Watch our team rider break down the {product.name} — from first impressions to performance tests.</p>
                 <div className="relative w-full aspect-video rough-border-sm overflow-hidden bg-black">
                   <iframe
                     className="w-full h-full"
                     src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    title="Ghost Ride Pro Board Review"
+                    title={`${product.name} Board Review`}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
@@ -546,29 +599,35 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Related Products: Fresh Cuts */}
-          <div className="mt-24 border-t-4 border-black pt-12">
-             <div className="flex justify-between items-end mb-12">
-                <h2 className="text-6xl font-anton uppercase text-black leading-none tracking-tight">Fresh Cuts</h2>
-                <Link href="/shop" className="hidden sm:inline-block font-marker text-xl text-primary hover:text-black transition-colors underline decoration-wavy">See all drops -&gt;</Link>
-             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {relatedProducts.map(prod => (
-                 <div key={prod.id} className="group relative">
-                    {prod.badge && (
-                       <div className="absolute -top-2 -left-2 bg-brand-pink text-black font-bold font-mono text-xs px-2 py-1 z-20 border border-black transform -rotate-6">{prod.badge}</div>
-                    )}
-                    <div className="aspect-[2/3] bg-gray-100 border-[4px] border-black mb-4 overflow-hidden relative shadow-hard group-hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all group-hover:-translate-y-2">
-                       <Image src={prod.image} alt={prod.name} fill className="object-cover transform group-hover:scale-110 transition-transform duration-500" unoptimized />
-                       <button className="absolute bottom-4 right-4 bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center border-2 border-transparent">
-                          <span className="material-icons">add</span>
-                       </button>
-                    </div>
-                    <h3 className="font-bebas text-2xl text-black">{prod.name}</h3>
-                    <p className="font-mono text-primary font-bold">${prod.price}</p>
-                 </div>
-              ))}
+          {relatedProducts.length > 0 && (
+            <div className="mt-24 border-t-4 border-black pt-12">
+               <div className="flex justify-between items-end mb-12">
+                  <h2 className="text-6xl font-anton uppercase text-black leading-none tracking-tight">More {categoryLabels[product.category] || 'Parts'}</h2>
+                  <Link href="/shop" className="hidden sm:inline-block font-marker text-xl text-primary hover:text-black transition-colors underline decoration-wavy">See all drops -&gt;</Link>
+               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {relatedProducts.map(prod => {
+                  const prodImageUrl = getImageUrl(prod);
+                  return (
+                    <Link key={prod.id} href={`/shop/${prod.id}`} className="group relative block">
+                      <div className="aspect-[2/3] bg-gray-100 border-[4px] border-black mb-4 overflow-hidden relative shadow-hard group-hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] transition-all group-hover:-translate-y-2 flex items-center justify-center">
+                        {prodImageUrl ? (
+                          <Image src={prodImageUrl} alt={prod.name} fill className="object-cover transform group-hover:scale-110 transition-transform duration-500" unoptimized />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-zinc-400 gap-2">
+                            <span className="material-icons text-5xl">skateboarding</span>
+                            <span className="font-mono text-xs uppercase tracking-wider">No Image</span>
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="font-bebas text-2xl text-black">{prod.name}</h3>
+                      <p className="font-mono text-primary font-bold">${Number(prod.price).toFixed(2)}</p>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </main>

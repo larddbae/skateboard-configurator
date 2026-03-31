@@ -114,12 +114,8 @@ export function Header() {
             })}
           </div>
 
-          {/* Right side - Search, Cart, User */}
+          {/* Right side - Cart, User */}
           <div className="flex items-center space-x-6">
-            {/* Search Button */}
-            <button className="text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-white/10">
-              <span className="material-icons text-3xl">search</span>
-            </button>
 
             {/* Cart */}
             <button
@@ -209,7 +205,7 @@ export function Header() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/auth/login"
-                  className="font-display text-sm uppercase tracking-wider hover:text-primary transition-colors hidden sm:block"
+                  className="bg-white text-background-dark font-display text-sm uppercase px-4 py-2 border-2 border-black shadow-sketch hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all hidden sm:block"
                 >
                   Sign In
                 </Link>

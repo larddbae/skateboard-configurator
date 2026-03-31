@@ -9,10 +9,14 @@ export default async function Page() {
   const client = createClient();
   const page = await client.getSingle("homepage");
   const slices = bundleTextAndImageSlices(page.data.slices);
+  // Filter out team_grid — the team section has its own dedicated page
+  const filteredSlices = slices.filter(
+    (s) => s.slice_type !== "team_grid"
+  );
 
   return (
     <SliceZone
-      slices={slices}
+      slices={filteredSlices}
       components={{
         ...components,
         text_and_image_bundle: ({

@@ -1,50 +1,31 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { Part } from "@/lib/types";
+import { fetchParts } from "@/lib/api";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
-// ─── Mock Product Data (25 products) ────────────────────────────────────────
-// To add your own images:
-//   1. Place images in /public/images/products/ (e.g. oni-mask-pro.jpg)
-//   2. Set the `image` field to "/images/products/oni-mask-pro.jpg"
-//   3. The Image component will load it from the public folder
+// ─── Category mapping ────────────────────────────────────────────────────────
 
-const mockProducts = [
-  { id: 1,  name: "Oni Mask Pro",      category: "Pro Models",  brand: "Victus",        price: 59.99,  size: "8.0",   rating: 4.5, reviews: 42,  image: "", badge: "New!",  badgeColor: "bg-primary" },
-  { id: 2,  name: "Pink Glitch",       category: "Pro Models",  brand: "Alien Workshop",  price: 89.99,  size: "8.125", rating: 5,   reviews: 18,  image: "" },
-  { id: 3,  name: "Thank You",         category: "Team Decks",  brand: "Baker",           price: 69.99,  size: "8.0",   rating: 4,   reviews: 5,   image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
-  { id: 4,  name: "Suburbia Yell",     category: "Pro Models",  brand: "Victus",        price: 79.99,  size: "8.25",  rating: 5,   reviews: 128, image: "" },
-  { id: 5,  name: "Azure Deep",        category: "Cruisers",    brand: "Santa Cruz",      price: 64.99,  size: "8.5",   rating: 3.5, reviews: 12,  image: "" },
-  { id: 6,  name: "Raw Maple",         category: "Team Decks",  brand: "Baker",           price: 54.99,  size: "8.0",   rating: 4,   reviews: 56,  image: "" },
-  { id: 7,  name: "Ghost Rider",       category: "Pro Models",  brand: "Victus",        price: 74.99,  size: "8.0",   rating: 4.5, reviews: 33,  image: "" },
-  { id: 8,  name: "Neon Nights",       category: "Pro Models",  brand: "Alien Workshop",  price: 84.99,  size: "8.125", rating: 4,   reviews: 22,  image: "" },
-  { id: 9,  name: "Skull Crusher",     category: "Team Decks",  brand: "Baker",           price: 67.99,  size: "8.25",  rating: 4.5, reviews: 45,  image: "" },
-  { id: 10, name: "Wave Runner",       category: "Cruisers",    brand: "Santa Cruz",      price: 72.99,  size: "8.5",   rating: 4,   reviews: 38,  image: "" },
-  { id: 11, name: "Classic Pool",      category: "Old School",  brand: "Santa Cruz",      price: 62.99,  size: "8.5",   rating: 3.5, reviews: 15,  image: "" },
-  { id: 12, name: "Street Demon",      category: "Pro Models",  brand: "Victus",        price: 77.99,  size: "8.0",   rating: 5,   reviews: 67,  image: "" },
-  { id: 13, name: "Flame Thrower",     category: "Pro Models",  brand: "Baker",           price: 82.99,  size: "8.125", rating: 4.5, reviews: 29,  image: "", badge: "New!",  badgeColor: "bg-primary" },
-  { id: 14, name: "Acid Drop",         category: "Team Decks",  brand: "Alien Workshop",  price: 71.99,  size: "7.75",  rating: 4,   reviews: 41,  image: "" },
-  { id: 15, name: "Retro Reissue",     category: "Old School",  brand: "Santa Cruz",      price: 69.99,  size: "8.5",   rating: 4.5, reviews: 88,  image: "" },
-  { id: 16, name: "Midnight Cruiser",  category: "Cruisers",    brand: "Victus",        price: 66.99,  size: "8.25",  rating: 4,   reviews: 19,  image: "" },
-  { id: 17, name: "Tech Slide",        category: "Pro Models",  brand: "Alien Workshop",  price: 91.99,  size: "7.75",  rating: 5,   reviews: 52,  image: "", badge: "HOT",   badgeColor: "bg-yellow-400", badgeRounded: true },
-  { id: 18, name: "Dragon Scale",      category: "Team Decks",  brand: "Baker",           price: 73.99,  size: "8.0",   rating: 4.5, reviews: 36,  image: "" },
-  { id: 19, name: "Zen Garden",        category: "Pro Models",  brand: "Victus",        price: 85.99,  size: "8.125", rating: 4,   reviews: 11,  image: "" },
-  { id: 20, name: "Bone Collector",    category: "Old School",  brand: "Santa Cruz",      price: 58.99,  size: "8.38",  rating: 3.5, reviews: 27,  image: "" },
-  { id: 21, name: "Cyber Punk",        category: "Pro Models",  brand: "Alien Workshop",  price: 94.99,  size: "8.0",   rating: 5,   reviews: 73,  image: "" },
-  { id: 22, name: "Beach Bomb",        category: "Cruisers",    brand: "Santa Cruz",      price: 61.99,  size: "8.5",   rating: 4,   reviews: 44,  image: "" },
-  { id: 23, name: "Widow Maker",       category: "Team Decks",  brand: "Baker",           price: 76.99,  size: "8.25",  rating: 4.5, reviews: 31,  image: "" },
-  { id: 24, name: "Solar Flare",       category: "Pro Models",  brand: "Victus",        price: 88.99,  size: "7.75",  rating: 5,   reviews: 95,  image: "" },
-  { id: 25, name: "Old Faithful",      category: "Old School",  brand: "Baker",           price: 55.99,  size: "8.38",  rating: 4,   reviews: 60,  image: "" },
-];
+const categoryOptions: Part["category"][] = ["deck", "wheel", "truck", "bolt"];
+const categoryLabels: Record<Part["category"], string> = {
+  deck: "Decks",
+  wheel: "Wheels",
+  truck: "Trucks",
+  bolt: "Bolts",
+};
 
-const categoryOptions = ["Pro Models", "Team Decks", "Cruisers", "Old School"];
-const brandOptions = ["Victus", "Alien Workshop", "Baker", "Santa Cruz"];
 const sizeOptions = ["7.75", "8.0", "8.125", "8.25", "8.38", "8.5"];
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const SERVER_BASE_URL = API_URL.replace(/\/api\/?$/, "");
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -75,15 +56,33 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
 
 // ─── Product Card Component ─────────────────────────────────────────────────
 
-function ProductCard({ product }: { product: typeof mockProducts[0] }) {
-  const { addToCart } = useCart();
+function ProductCard({ product, onAddToCart }: { product: Part; onAddToCart: (product: Part) => void }) {
+  const getImageUrl = (part: Part) => {
+    if (part.texture_url) {
+      if (part.texture_url.startsWith("/storage/")) {
+        return `${SERVER_BASE_URL}${part.texture_url}`;
+      }
+      return part.texture_url;
+    }
+    return "";
+  };
+
+  const imageUrl = getImageUrl(product);
+
   return (
     <div className="group relative bg-white p-2 border-2 border-background-dark shadow-sketch hover:shadow-sketch-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-      {/* Badge */}
-      {product.badge && (
-        <div className={`absolute -top-3 ${product.badge === "HOT" ? "-right-3 rotate-6" : "-left-3 -rotate-12"} z-20`}>
-          <span className={`${product.badgeColor} ${product.badge === "HOT" ? "text-black rounded-full" : "text-white"} font-display font-bold px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] border border-black text-sm`}>
-            {product.badge}
+      {/* Stock Badge */}
+      {product.stock <= 5 && product.stock > 0 && (
+        <div className="absolute -top-3 -right-3 rotate-6 z-20">
+          <span className="bg-yellow-400 text-black rounded-full font-display font-bold px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] border border-black text-sm">
+            LOW
+          </span>
+        </div>
+      )}
+      {product.stock === 0 && (
+        <div className="absolute -top-3 -left-3 -rotate-12 z-20">
+          <span className="bg-red-500 text-white font-display font-bold px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] border border-black text-sm">
+            SOLD OUT
           </span>
         </div>
       )}
@@ -100,12 +99,12 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
           </Link>
         </div>
 
-        {/* Product Image Placeholder */}
+        {/* Product Image */}
         <div className="relative h-full w-full flex items-center justify-center">
-          {product.image ? (
+          {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={product.image}
+              src={imageUrl}
               alt={product.name}
               className="object-contain w-full h-full transform group-hover:scale-105 transition-transform duration-500 drop-shadow-xl"
             />
@@ -121,29 +120,49 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
       {/* Product Info */}
       <div className="p-4 flex flex-col flex-grow text-center relative">
         <div className="mb-1 text-xs font-mono font-bold text-gray-500 uppercase tracking-widest border-b border-dashed border-gray-300 pb-1 mx-4">
-          {product.category}
+          {categoryLabels[product.category]}
         </div>
         <h3 className="font-display text-xl text-background-dark mt-2 mb-1 group-hover:text-primary transition-colors leading-tight">
           {product.name}
         </h3>
 
-        <StarRating rating={product.rating} reviews={product.reviews} />
+        {/* Stats as mini rating */}
+        <StarRating rating={product.durability / 20} reviews={product.stock} />
 
         <div className="mt-auto flex items-center justify-between px-2 pt-2 border-t-2 border-black border-dashed">
           <span className="font-mono font-black text-2xl text-background-dark tracking-tight">
-            ${product.price.toFixed(2)}
+            ${Number(product.price).toFixed(2)}
           </span>
           <button 
-            onClick={() => addToCart({
-              id: String(product.id),
-              name: product.name,
-              price: product.price,
-              image: product.image,
-            })}
-            className="h-10 px-3 bg-primary text-white font-display font-bold border-2 border-black shadow-[2px_2px_0_0_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center justify-center text-sm -rotate-2 hover:rotate-0"
+            onClick={() => onAddToCart(product)}
+            disabled={product.stock === 0}
+            className={`h-10 px-3 font-display font-bold border-2 border-black shadow-[2px_2px_0_0_#000] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-none transition-all flex items-center justify-center text-sm -rotate-2 hover:rotate-0 ${
+              product.stock === 0
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-primary text-white"
+            }`}
           >
-            ADD
+            {product.stock === 0 ? "N/A" : "ADD"}
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Loading Skeleton ───────────────────────────────────────────────────────
+
+function ProductCardSkeleton() {
+  return (
+    <div className="bg-white p-2 border-2 border-background-dark shadow-sketch flex flex-col animate-pulse">
+      <div className="bg-gray-200 aspect-[4/5] border-2 border-zinc-200"></div>
+      <div className="p-4 flex flex-col flex-grow text-center space-y-3">
+        <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+        <div className="h-5 bg-gray-200 rounded w-3/4 mx-auto"></div>
+        <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto"></div>
+        <div className="flex items-center justify-between px-2 pt-2 border-t-2 border-black border-dashed mt-auto">
+          <div className="h-7 bg-gray-200 rounded w-20"></div>
+          <div className="h-10 bg-gray-200 rounded w-14"></div>
         </div>
       </div>
     </div>
@@ -255,15 +274,36 @@ function Pagination({
 // ─── Main Shop Page ─────────────────────────────────────────────────────────
 
 export default function ShopPage() {
+  const { isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
+  const router = useRouter();
+
+  // ── Products from API ──────────────────────────────────────────────────
+  const [products, setProducts] = useState<Part[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setIsLoadingProducts(true);
+        const parts = await fetchParts();
+        setProducts(parts);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    }
+    loadProducts();
+  }, []);
+
   // ── Active filter states (applied to product grid) ─────────────────────
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(150);
 
   // ── Pending filter states (staged, waiting for "Apply") ────────────────
   const [pendingCategories, setPendingCategories] = useState<string[]>([]);
-  const [pendingBrands, setPendingBrands] = useState<string[]>([]);
   const [pendingSizes, setPendingSizes] = useState<string[]>([]);
   const [pendingPriceRange, setPendingPriceRange] = useState(150);
 
@@ -281,23 +321,16 @@ export default function ShopPage() {
   const hasPendingChanges = useMemo(() => {
     return (
       JSON.stringify(pendingCategories) !== JSON.stringify(selectedCategories) ||
-      JSON.stringify(pendingBrands) !== JSON.stringify(selectedBrands) ||
       JSON.stringify(pendingSizes) !== JSON.stringify(selectedSizes) ||
       pendingPriceRange !== priceRange
     );
-  }, [pendingCategories, pendingBrands, pendingSizes, pendingPriceRange, selectedCategories, selectedBrands, selectedSizes, priceRange]);
+  }, [pendingCategories, pendingSizes, pendingPriceRange, selectedCategories, selectedSizes, priceRange]);
 
   // ── Toggle helpers (mutate PENDING states) ──────────────────────────────
 
   const toggleCategory = (cat: string) => {
     setPendingCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
-
-  const toggleBrand = (brand: string) => {
-    setPendingBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
   };
 
@@ -314,29 +347,47 @@ export default function ShopPage() {
   // ── Apply Filters: copy pending → active ───────────────────────────────
   const applyFilters = useCallback(() => {
     setSelectedCategories([...pendingCategories]);
-    setSelectedBrands([...pendingBrands]);
     setSelectedSizes([...pendingSizes]);
     setPriceRange(pendingPriceRange);
     setCurrentPage(1);
-  }, [pendingCategories, pendingBrands, pendingSizes, pendingPriceRange]);
+  }, [pendingCategories, pendingSizes, pendingPriceRange]);
 
   // ── Reset Filters: clear both pending + active ─────────────────────────
   const resetFilters = useCallback(() => {
     setPendingCategories([]);
-    setPendingBrands([]);
     setPendingSizes([]);
     setPendingPriceRange(150);
     setSelectedCategories([]);
-    setSelectedBrands([]);
     setSelectedSizes([]);
     setPriceRange(150);
     setCurrentPage(1);
   }, []);
 
+  // ── Handle Add to Cart with auth check ─────────────────────────────────
+  const handleAddToCart = useCallback((product: Part) => {
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+      return;
+    }
+
+    const imageUrl = product.texture_url
+      ? product.texture_url.startsWith("/storage/")
+        ? `${SERVER_BASE_URL}${product.texture_url}`
+        : product.texture_url
+      : "";
+
+    addToCart({
+      id: String(product.id),
+      name: product.name,
+      price: Number(product.price),
+      image: imageUrl,
+    });
+  }, [isAuthenticated, router, addToCart]);
+
   // ── Filter + Sort + Paginate pipeline ───────────────────────────────────
 
   const filteredAndSorted = useMemo(() => {
-    let result = [...mockProducts];
+    let result = [...products];
 
     // Filter by category
     if (selectedCategories.length > 0) {
@@ -344,25 +395,15 @@ export default function ShopPage() {
     }
 
     // Filter by price
-    result = result.filter((p) => p.price <= priceRange);
-
-    // Filter by brand
-    if (selectedBrands.length > 0) {
-      result = result.filter((p) => selectedBrands.includes(p.brand));
-    }
-
-    // Filter by size
-    if (selectedSizes.length > 0) {
-      result = result.filter((p) => selectedSizes.includes(p.size));
-    }
+    result = result.filter((p) => Number(p.price) <= priceRange);
 
     // Sort
     switch (sortBy) {
       case "price-low":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-high":
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "newest":
         result.sort((a, b) => b.id - a.id);
@@ -375,7 +416,7 @@ export default function ShopPage() {
     }
 
     return result;
-  }, [selectedCategories, priceRange, selectedBrands, selectedSizes, sortBy]);
+  }, [products, selectedCategories, priceRange, sortBy]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PRODUCTS_PER_PAGE);
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
@@ -388,17 +429,15 @@ export default function ShopPage() {
 
   // Category counts (based on current non-category filters)
   const categoryCounts = useMemo(() => {
-    let base = [...mockProducts];
-    if (selectedBrands.length > 0) base = base.filter((p) => selectedBrands.includes(p.brand));
-    if (selectedSizes.length > 0) base = base.filter((p) => selectedSizes.includes(p.size));
-    base = base.filter((p) => p.price <= priceRange);
+    let base = [...products];
+    base = base.filter((p) => Number(p.price) <= priceRange);
 
     const counts: Record<string, number> = {};
     categoryOptions.forEach((cat) => {
       counts[cat] = base.filter((p) => p.category === cat).length;
     });
     return counts;
-  }, [selectedBrands, selectedSizes, priceRange]);
+  }, [products, priceRange]);
 
   // Page change handler
   const handlePageChange = (page: number) => {
@@ -414,6 +453,8 @@ export default function ShopPage() {
 
   // ── GSAP Reveal Animations ─────────────────────────────────────────────
   useGSAP(() => {
+    if (isLoadingProducts) return;
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -456,7 +497,7 @@ export default function ShopPage() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [isLoadingProducts] });
 
   return (
     <div ref={containerRef} className="bg-texture bg-background-light min-h-screen relative overflow-hidden">
@@ -493,7 +534,7 @@ export default function ShopPage() {
           className="font-display text-[12vw] xl:text-[11rem] font-black uppercase leading-none whitespace-nowrap text-brand-purple opacity-20 mix-blend-multiply animate-squiggle block"
           style={{ transform: 'rotate(-5deg)' }}
         >
-          Deck Lineup
+          Parts Lineup
         </span>
       </div>
 
@@ -509,10 +550,10 @@ export default function ShopPage() {
             <div>
               <h1 className="font-display text-5xl sm:text-6xl text-background-dark uppercase leading-[0.8] tracking-tighter transform -rotate-1"
                   style={{ textShadow: '3px 3px 0px #ff6b35, -1px -1px 0px #ff6b35, 1px -1px 0px #ff6b35, -1px 1px 0px #ff6b35, 0px 2px 0px #ff6b35, 2px 0px 0px #ff6b35' }}>
-                Shop Decks
+                Shop Parts
               </h1>
               <p className="font-mono text-zinc-600 text-base mt-2 ml-2 transform rotate-1">
-                _Showing {showingStart}-{showingEnd} of {totalCount} products_
+                {isLoadingProducts ? "_Loading products..._" : `_Showing ${showingStart}-${showingEnd} of ${totalCount} products_`}
               </p>
             </div>
           </div>
@@ -571,9 +612,9 @@ export default function ShopPage() {
                       className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
                     />
                     <span className={`ml-3 ${pendingCategories.includes(cat) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
-                      {cat}
+                      {categoryLabels[cat]}
                     </span>
-                    <span className="ml-auto font-mono text-sm bg-black text-white px-1 rounded-sm">{categoryCounts[cat]}</span>
+                    <span className="ml-auto font-mono text-sm bg-black text-white px-1 rounded-sm">{categoryCounts[cat] ?? 0}</span>
                   </label>
                 ))}
               </div>
@@ -585,40 +626,20 @@ export default function ShopPage() {
               <div className="px-2">
                 <input
                   type="range"
-                  min="40"
+                  min="5"
                   max="150"
                   value={pendingPriceRange}
                   onChange={(e) => handlePendingPriceChange(Number(e.target.value))}
                   className="w-full bg-transparent appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #1a1a1a ${((pendingPriceRange - 40) / 110) * 100}%, #e5e5e5 ${((pendingPriceRange - 40) / 110) * 100}%)`
+                    background: `linear-gradient(to right, #1a1a1a ${((pendingPriceRange - 5) / 145) * 100}%, #e5e5e5 ${((pendingPriceRange - 5) / 145) * 100}%)`
                   }}
                 />
                 <div className="flex justify-between mt-4 font-mono font-bold text-sm">
-                  <span>$40</span>
+                  <span>$5</span>
                   <span className="bg-yellow-400 px-1 transform -rotate-3 border border-black">${pendingPriceRange}</span>
                   <span>$150</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Brand Filter */}
-            <div className="gsap-filter-card relative bg-white/70 backdrop-blur-sm border-2 border-black p-5 shadow-sketch -rotate-[0.3deg]">
-              <h3 className="font-display text-xl font-bold uppercase text-black mb-6 border-b-2 border-black pb-2">Brand</h3>
-              <div className="space-y-3 pl-2">
-                {brandOptions.map((brand) => (
-                  <label key={brand} className="flex items-center group cursor-pointer hover:translate-x-1 transition-transform">
-                    <input
-                      type="checkbox"
-                      checked={pendingBrands.includes(brand)}
-                      onChange={() => toggleBrand(brand)}
-                      className="w-5 h-5 border-2 border-current rounded-none bg-transparent"
-                    />
-                    <span className={`ml-3 ${pendingBrands.includes(brand) ? "font-bold" : ""} group-hover:underline decoration-wavy decoration-primary`}>
-                      {brand}
-                    </span>
-                  </label>
-                ))}
               </div>
             </div>
 
@@ -668,7 +689,13 @@ export default function ShopPage() {
 
           {/* Product Grid */}
           <div className="flex-1">
-            {paginatedProducts.length === 0 ? (
+            {isLoadingProducts ? (
+              <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"} gap-8`}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : paginatedProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
                 <span className="material-icons text-7xl text-zinc-300 mb-4">search_off</span>
                 <h3 className="font-display text-2xl text-zinc-500 mb-2">No products found</h3>
@@ -678,7 +705,7 @@ export default function ShopPage() {
               <div className={`grid ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"} gap-8`}>
                 {paginatedProducts.map((product) => (
                   <div key={product.id} className="gsap-product">
-                    <ProductCard product={product} />
+                    <ProductCard product={product} onAddToCart={handleAddToCart} />
                   </div>
                 ))}
               </div>
